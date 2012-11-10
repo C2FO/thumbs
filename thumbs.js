@@ -61,7 +61,7 @@
                 var result = parentObject[methodName].apply(this, args || {});
                 delete this._superCallObjects[methodName];
                 return result;
-            }
+            };
         }())
     };
 
