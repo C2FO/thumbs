@@ -1,17 +1,13 @@
 beforeEach(function () {
     "use strict";
 
-    _.templateSettings = {
-        interpolate : /\{\{(.+?)\}\}/g
-    };
-
     // set up custom matchers
     this.addMatchers({
-        toBeAFunction : function () {
+        toBeAFunction: function () {
             return typeof this.actual === 'function';
         },
 
-        toBeABoolean : function () {
+        toBeABoolean: function () {
             return typeof this.actual === 'boolean';
         }
     });
@@ -19,16 +15,18 @@ beforeEach(function () {
     this.validResponse = function (responseText) {
         return [
             200,
-            { "Content-Type" : "application/json" },
+            { "Content-Type": "application/json" },
             JSON.stringify(responseText)
         ];
     };
 
     this.invalidResponse = function (responseText, code) {
-        if (!code) { code = 401; }
+        if (!code) {
+            code = 401;
+        }
         return [
             code,
-            { "Content-Type" : "application/json" },
+            { "Content-Type": "application/json" },
             JSON.stringify(responseText)
         ];
     };
