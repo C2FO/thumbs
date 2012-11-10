@@ -19,6 +19,12 @@ describe("thumbs.View event", function () {
         spy.reset();
     });
 
+    it("adds events set in the template to the events object", function () {
+        expect(view.events).not.toBeDefined();
+        view.render();
+        expect(view.events).toBeDefined();
+    });
+
     it("allows events to be set directly on an element", function () {
         view.render();
         view.$('button').trigger('click');

@@ -109,12 +109,16 @@
 
         checkForEvents: function checkForEvents () {
             var self = this;
+            this.events = this.events || {};
             this.$('[data-thumbs-event]').each(function () {
                 var $this = $(this), data = $this.data('thumbs-event').split(':'),
                     event = data[0], func = data[1];
 
-                    $this.bind(event, _.bind(self[func], self));
+                var id = _.uniqueId('thumbs_');
+                $this.addClass(id);
+                self.events[event + ' .' + id] = func;
             });
+            this.delegateEvents();
             return this;
         }
     };
