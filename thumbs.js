@@ -2,9 +2,7 @@
 
     var root = this;
     var ArrayProto = Array.prototype;
-    var push = ArrayProto.push;
     var slice = ArrayProto.slice;
-    var splice = ArrayProto.splice;
 
     function argsToArray(args) {
         return slice.call(args, 0);
@@ -101,13 +99,13 @@
     Router = thumbs.Router = Router.extend(_super);
 
     var EventDelegator = {
-        render: function render () {
+        render: function render() {
             this._super('render', arguments);
             this.checkForEvents();
             return this;
         },
 
-        checkForEvents: function checkForEvents () {
+        checkForEvents: function checkForEvents() {
             var self = this;
             this.events = this.events || {};
             this.$('[data-thumbs-event]').each(function () {
@@ -124,13 +122,13 @@
     };
 
     var Identifier = {
-        render: function render () {
+        render: function render() {
             this._super('render', arguments);
             this.checkForIdentifiers();
             return this;
         },
 
-        checkForIdentifiers: function checkForIdentifiers () {
+        checkForIdentifiers: function checkForIdentifiers() {
             var self = this;
             this.$('[data-thumbs-id]').each(function (el) {
                 var $this = $(this);
@@ -244,6 +242,17 @@
 
     };
 
+    thumbs.templater = (function _templater() {
+        var templater = _.template;
+        return function __templater(tmplr) {
+            if (tmplr) {
+                return (templater = tmplr);
+            } else {
+                return templater;
+            }
+        };
+    }());
+
     View = thumbs.View = View.extend(Formatter).extend(Identifier).extend(Binder).extend(EventDelegator).extend({
         _subviews: null,
 
@@ -310,6 +319,97 @@
             this.undelegateEvents();
             this.removeSubViews();
             return this._super('remove', arguments);
+        }
+    });
+
+    thumbs.TemplateView = View.extend({
+        /**@lends thumbs.TemplateView.prototype*/
+
+        /**
+         * The the `templater` to use to compile this view template. If not specified them {@link thumbs.templater}
+         * will be used.
+         *
+         * @example
+         *
+         * var MyView = thumbs.TemplateView.extend({
+         *     templater : function(template){
+         *          return Handlebars.compile(template);
+         *     },
+         *
+         *     template : "<div>{{firstName}}</div>"
+         * })
+         *
+         * @function
+         */
+        templater: thumbs.templater(),
+
+        /**
+         * The template string for this view.
+         *
+         * @example
+         * var MyView = thumbs.TemplateView.extend({
+         *     template : "<div>{{firstName}}</div>"
+         * });
+         *
+         */
+        template: null,
+
+        initialize: function (options) {
+            this._super("initialize", arguments);
+            if (this.template) {
+                this._template = this.templater(this.template);
+            }
+        },
+
+        /**
+         * Gathers data to be interpolated into the template. By default serializes the model to json.
+         *
+         * @example
+         * var MyView = thumbs.TemplateView.extend({
+         *     template : "<div><div>{{i18n.hello}}<div> <div>{{firstName}}</div> </div>",
+         *     getTemplateData : function(){
+         *         var data = this._super("getTemplateData", arguments);
+         *         data.i18n = {hello : "Hello"};
+         *         return data;
+         *     }
+         * });
+         *
+         * @return {Object} Object with key value pairs to be interpolated into the View.
+         */
+        getTemplateData: function () {
+            return this.model ? this.model.toJSON() : {};
+        },
+
+        /**
+         * Fills the template with the data gathered from {@link thumbs.TemplateView#getTemplateData}
+         * @return {thumbs.TemplateView} this for chaining.
+         */
+        fillTemplate: function fillTemplate() {
+            if (this._template) {
+                return this._template(this.getTemplateData());
+            } else {
+                return null;
+            }
+        },
+
+        /**
+         * Renders the the template.
+         *
+         * @return this
+         */
+        renderTemplate: function renderTemplate() {
+            if (this._template) {
+                var template = this.fillTemplate();
+                if (template) {
+                    this.$el.html(template);
+                }
+            }
+            return this;
+        },
+
+        render: function () {
+            //call render template
+            return this.renderTemplate()._super("render", arguments);
         }
     });
 

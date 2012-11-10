@@ -1,5 +1,5 @@
 /*global module:false*/
-module.exports = function(grunt) {
+module.exports = function (grunt) {
     var fs = require('fs');
 
     // grunt doesn't natively support reading config from .jshintrc yet
@@ -16,22 +16,22 @@ module.exports = function(grunt) {
                 ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */'
         },
 
-        jshint:{
-            options:jshintOptions,
-            globals:jshintOptions.predef
+        jshint: {
+            options: jshintOptions,
+            globals: jshintOptions.predef
         },
 
         lint: {
             files: [
                 'thumbs.js'
-            ],
+            ]
         },
 
-        jasmine:{
-            all:{
-                src:['test/runner.html'],
-                errorReporting:true,
-                timeout : 20000
+        jasmine: {
+            all: {
+                src: ['test/runner.html'],
+                errorReporting: true,
+                timeout: 20000
             }
         },
         concat: {
