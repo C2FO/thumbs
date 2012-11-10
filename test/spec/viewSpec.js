@@ -37,7 +37,7 @@ describe("thumbs.View", function () {
     var TestModel = thumbs.Model.extend({});
 
     beforeEach(function () {
-        this.model = new TestModel({firstName : "Bob", lastName : "Yukon"})
+        this.model = new TestModel({firstName: "Bob", lastName: "Yukon"})
         this.view = new TestView({ model: this.model });
     });
 
