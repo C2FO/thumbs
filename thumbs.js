@@ -170,6 +170,7 @@
         // override if that's not what's needed
         render: function render() {
             this.assign(this._subviews);
+            this.setupProperties();
             return this;
         },
 
@@ -187,6 +188,17 @@
                 }, this);
             }
 
+            return this;
+        },
+
+        setupProperties: function () {
+            var self = this;
+            this.$('[data-thumbs-id]').each(function (el) {
+                var $this = $(this);
+                var id = $this.data('thumbs-id');
+                self[id] = this;
+                self['$' + id] = $this;
+            });
             return this;
         },
 
