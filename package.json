@@ -1,13 +1,14 @@
 {
-  "name": "thumbs",
-  "version": "0.0.1",
-  "private": true,
-  "author": "Pollenware",
-  "dependencies": {
-  },
-  "devDependencies": {
-    "jshint": "~0.9.1",
-    "grunt": "~0.3.17",
-    "grunt-jasmine-task": "~0.2.2"
-  }
+    "name": "thumbs",
+    "version": "0.0.1",
+    "private": true,
+    "author": "Pollenware",
+    "license": "MIT",
+    "dependencies": {
+    },
+    "devDependencies": {
+        "jshint": "~0.9.1",
+        "grunt": "~0.3.17",
+        "grunt-jasmine-task": "~0.2.2"
+    }
 }

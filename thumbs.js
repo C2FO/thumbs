@@ -11,11 +11,6 @@
     var thumbs;
     if (typeof exports !== 'undefined') {
         thumbs = exports;
-    } else if (typeof define === "function" && define.amd) {
-        define(function () {
-            thumbs = {};
-            return thumbs;
-        });
     } else {
         thumbs = root.thumbs = {};
     }
@@ -189,26 +184,48 @@
             return this;
         },
 
-        setElData: function setElData(el, data, attribute) {
+        setElData: function setElData(el, data, type, attribute) {
             if (this.checkFormatting) {
-                this.checkFormatting(el, data);
+                this.checkFormatting(el, data, type);
             } else {
                 data = (data !== null && "undefined" !== typeof data) ? data : "";
-                this.$(el).text(data);
+                var $el = this.$(el);
+                if ("function" === typeof $el[type]) {
+                    $el[type](data)
+                } else {
+                    $el.attr(type, data);
+                }
             }
         },
 
         setupBinders: function setUpMonitors() {
             var monitors = this.__monitors, setElData = _.bind(this.setElData, this);
-            this.$("[data-thumbs-bind]").each(function () {
-                var el = this, $el = $(el);
-                var m = $el.data("thumbs-bind");
+
+            function setupType(m, el, type) {
                 if (!(m in monitors)) {
                     monitors[m] = [];
                 }
                 monitors[m].push(function monitor(data) {
-                    setElData(el, data, m);
+                    setElData(el, data, type, m);
                 });
+            }
+
+            this.$("[data-thumbs-bind]").each(function () {
+                var el = this, $el = $(el);
+                var m = $el.data("thumbs-bind");
+                if (m.indexOf(":") === -1) {
+                    setupType(m, el, "text");
+                } else {
+                    var mParts = _.map(m.split(":"), function (m) {
+                        return $.trim(m);
+                    });
+                    if (mParts.length === 2) {
+                        setupType(mParts[1], el, mParts[0]);
+                    } else {
+                        throw new TypeError("Invalid data-thumbs-bind definition");
+                    }
+                }
+
             });
             var model = this.model;
             model.on("change", this.__updateValues, this);
@@ -236,15 +253,21 @@
 
     var Formatter = {
 
-        checkFormatting: function checkFormatting(el, data) {
+        checkFormatting: function checkFormatting(el, data, type) {
+            type = type || "text";
             var $el = this.$(el), args = argsToArray(arguments);
-            data = args.length === 2 ? data : $el.text();
+            data = args.length === 3 ? data : $el.text();
             data = (data !== null && "undefined" !== typeof data) ? data : "";
+
             var formatter = $el.data("thumbs-format");
+            data = (data !== null && "undefined" !== typeof data) ? data : "";
             if (formatter && "function" === typeof this[formatter]) {
-                $el.text(this[formatter](data));
+                data = this[formatter](data);
+            }
+            if ("function" === typeof $el[type]) {
+                $el[type](data)
             } else {
-                $el.text(data);
+                $el.attr(type, data);
             }
         },
 
@@ -273,6 +296,14 @@
             }
         };
     }());
+
+    thumbs.Router = Router.extend({
+        route: function route(route, name, callback) {
+            this._super("route", arguments);
+            thumbs.history = Backbone.history;
+            return this;
+        }
+    });
 
     View = thumbs.View = View.extend(Formatter).extend(Identifier).extend(Binder).extend(EventDelegator).extend({
         _subviews: null,
@@ -433,5 +464,18 @@
             return this.renderTemplate()._super("render", arguments);
         }
     });
+
+    if ("undefined" !== typeof exports) {
+        if ("undefined" !== typeof module && module.exports) {
+            module.exports = thumbs;
+        }
+    } else if ("function" === typeof define) {
+        define(function () {
+            return thumbs;
+        });
+    } else {
+        this.thumbs = thumbs;
+    }
+
 
 }).call(this);
