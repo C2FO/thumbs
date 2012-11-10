@@ -100,6 +100,41 @@ describe("thumbs.View Monitor", function () {
             expect(this.view.$('[data-thumbs-bind="val:lastName"]')).toHaveValue("Yukon");
         });
 
+        it("should update values", function () {
+            this.view.render();
+            this.model.set({isChecked: false, lastName: "YUKON"});
+            expect(this.view.$('[data-thumbs-bind="checked:isChecked"]')).toNotBeChecked();
+            expect(this.view.$('[data-thumbs-bind="val:lastName"]')).toHaveValue("YUKON");
+        });
+
+        it("should update values", function () {
+            this.view.render();
+            this.model.set({isChecked: false, lastName: null});
+            expect(this.view.$('[data-thumbs-bind="checked:isChecked"]')).toNotBeChecked();
+            expect(this.view.$('[data-thumbs-bind="val:lastName"]')).toHaveValue("");
+        });
+
+    });
+
+    describe("should support data-thumbs-bind-class", function () {
+
+        var TestView = View.extend({
+            template: '<p data-thumbs-bind-class="visible:isChecked"></p>'
+        });
+
+
+        var TestModel = thumbs.Model.extend({});
+
+        beforeEach(function () {
+            this.model = new TestModel({isChecked: true, lastName: "Yukon"});
+            this.view = new TestView({ model: this.model });
+        });
+
+        it("should set initial values", function () {
+            this.view.render();
+            expect(this.view.$('[data-thumbs-bind-class="visible:isChecked"]')).toHaveClass("visible");
+        });
+
     });
 
 
