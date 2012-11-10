@@ -6,6 +6,10 @@
     var slice = ArrayProto.slice;
     var splice = ArrayProto.splice;
 
+    function argsToArray(args) {
+        return slice.call(args, 0);
+    }
+
     var thumbs;
     if (typeof exports !== 'undefined') {
         thumbs = exports;
@@ -125,20 +129,24 @@
         },
 
         setElData: function setElData(el, data, attribute) {
-            data = (data !== null && "undefined" !== typeof data) ? data : "";
-            this.$(el).text(data);
+            if (this.checkFormatting) {
+                this.checkFormatting(el, data);
+            } else {
+                data = (data !== null && "undefined" !== typeof data) ? data : "";
+                this.$(el).text(data);
+            }
         },
 
         setupBinders: function setUpMonitors() {
             var monitors = this.__monitors, setElData = _.bind(this.setElData, this);
             this.$("[data-thumbs-bind]").each(function () {
-                var $el = $(this);
+                var el = this, $el = $(el);
                 var m = $el.data("thumbs-bind");
                 if (!(m in monitors)) {
                     monitors[m] = [];
                 }
                 monitors[m].push(function monitor(data) {
-                    setElData($el, data, m);
+                    setElData(el, data, m);
                 });
             });
             var model = this.model;
@@ -165,7 +173,35 @@
 
     };
 
-    View = thumbs.View = View.extend(Binder).extend({
+    var Formatter = {
+
+        checkFormatting: function checkFormatting(el, data) {
+            var $el = this.$(el), args = argsToArray(arguments), data = args.length === 2 ? data : $el.text();
+            data = (data !== null && "undefined" !== typeof data) ? data : "";
+            var formatter = $el.data("thumbs-format");
+            if (formatter && "function" === typeof this[formatter]) {
+                $el.text(this[formatter](data));
+            } else {
+                $el.text(data);
+            }
+        },
+
+        renderFormatters: function renderFormatters() {
+            var checkFormatting = _.bind(this.checkFormatting, this);
+            this.$("[data-thumbs-format]").each(function () {
+                checkFormatting(this);
+            });
+            return this;
+        },
+
+        render: function render() {
+            this._super("render", arguments);
+            return this.renderFormatters();
+        }
+
+    };
+
+    View = thumbs.View = View.extend(Binder).extend(Formatter).extend({
         _subviews: null,
 
         initialize: function initialize(options) {
