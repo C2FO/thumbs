@@ -13,6 +13,10 @@ beforeEach(function () {
 
         toNotBeChecked: function () {
             return !this.actual.is(':checked')
+        },
+
+        toHaveNotBeenCalled: function (spy) {
+            return this.actual.notCalled;
         }
     });
 
