@@ -1,7 +1,7 @@
 describe("a core/view", function () {
 
 
-    var View = Thumbs.View.extend({
+    var View = thumbs.View.extend({
         template: null,
 
         initialize: function (options) {
@@ -37,7 +37,7 @@ describe("a core/view", function () {
         template: '<p>Hello</p>'
     });
 
-    var TestModel = Thumbs.Model.extend({
+    var TestModel = thumbs.Model.extend({
     });
 
 

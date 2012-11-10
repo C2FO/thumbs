@@ -6,11 +6,11 @@
     var slice = ArrayProto.slice;
     var splice = ArrayProto.splice;
 
-    var Thumbs;
+    var thumbs;
     if (typeof exports !== 'undefined') {
-        Thumbs = exports;
+        thumbs = exports;
     } else {
-        Thumbs = root.Thumbs = {};
+        thumbs = root.thumbs = {};
     }
 
 
@@ -25,14 +25,14 @@
         Backbone = require('underscore');
     }
 
-    _.extend(Thumbs, Backbone);
+    _.extend(thumbs, Backbone);
 
     // Current version of the library. Keep in sync with `package.json`.
-    Thumbs.VERSION = '0.0.0';
+    thumbs.VERSION = '0.0.0';
 
 
     //copy over Backbones $ for dom
-    var Model = Thumbs.Model, View = Thumbs.View, Collection = Thumbs.Collection, Router = Thumbs.Router, History = Thumbs.History;
+    var Model = thumbs.Model, View = thumbs.View, Collection = thumbs.Collection, Router = thumbs.Router, History = thumbs.History;
 
     var _super = {
         _super: (function _super() {
@@ -68,7 +68,7 @@
 
     // this allows access to prototype.constructor.__super__
     // when _.bindAll is used
-    var _extend = Thumbs.Model.extend;
+    var _extend = thumbs.Model.extend;
 
     function extend(protoProps, staticProps) {
         var child = _extend.apply(this, arguments);
@@ -83,21 +83,21 @@
         this.initialize.apply(this, arguments);
     }
 
-    _.extend(Class.prototype, Thumbs.Events, _super, {
+    _.extend(Class.prototype, thumbs.Events, _super, {
         initialize: function initialize() {
         }
     });
 
-    Thumbs.Class = Class;
+    thumbs.Class = Class;
 
     Class.extend = Model.extend = View.extend = Collection.extend = Router.extend = History.extend = extend;
-    Model = Thumbs.Model = Model.extend(_super);
-    View = Thumbs.View = View.extend(_super);
-    Collection = Thumbs.Collection = Collection.extend(_super);
-    Router = Thumbs.Router = Router.extend(_super);
+    Model = thumbs.Model = Model.extend(_super);
+    View = thumbs.View = View.extend(_super);
+    Collection = thumbs.Collection = Collection.extend(_super);
+    Router = thumbs.Router = Router.extend(_super);
 
 
-    var EventMonitor = Thumbs.EventMonitor = {
+    var EventMonitor = thumbs.EventMonitor = {
 
         monitor: {},
 
@@ -130,7 +130,7 @@
         }
     };
 
-    View = Thumbs.View = View.extend(EventMonitor).extend({
+    View = thumbs.View = View.extend(EventMonitor).extend({
         _subviews: null,
 
         initialize: function initialize(options) {
@@ -197,6 +197,7 @@
             return this._super('remove', arguments);
         }
     });
+
     return View;
 
 
