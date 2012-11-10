@@ -1,4 +1,4 @@
-describe("data-thumbs-id", function () {
+describe("thumbs.View identifier", function () {
     var tmpl, View;
     beforeEach(function () {
         tmpl = '<input type="text" data-thumbs-id="foo" val="Test Input"/>';
