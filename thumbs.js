@@ -101,13 +101,13 @@
     Router = thumbs.Router = Router.extend(_super);
 
     var EventDelegator = {
-        render: function render () {
+        render: function render() {
             this._super('render', arguments);
             this.checkForEvents();
             return this;
         },
 
-        checkForEvents: function checkForEvents () {
+        checkForEvents: function checkForEvents() {
             var self = this;
             this.events = this.events || {};
             this.$('[data-thumbs-event]').each(function () {
@@ -124,13 +124,13 @@
     };
 
     var Identifier = {
-        render: function render () {
+        render: function render() {
             this._super('render', arguments);
             this.checkForIdentifiers();
             return this;
         },
 
-        checkForIdentifiers: function checkForIdentifiers () {
+        checkForIdentifiers: function checkForIdentifiers() {
             var self = this;
             this.$('[data-thumbs-id]').each(function (el) {
                 var $this = $(this);
@@ -243,7 +243,7 @@
 
     };
 
-    thumbs.templater = (function _templater(templater) {
+    thumbs.templater = (function _templater() {
         var templater = _.template;
         return function __templater(tmplr) {
             if (tmplr) {
