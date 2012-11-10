@@ -96,45 +96,80 @@
     Collection = thumbs.Collection = Collection.extend(_super);
     Router = thumbs.Router = Router.extend(_super);
 
+    var Binder = {
 
-    var EventMonitor = thumbs.EventMonitor = {
+        __monitors: null,
 
-        monitor: {},
+        initialize: function initialize() {
+            this._super("initialize", arguments);
+            this.__monitors = {};
+        },
 
-        __setupListener: function __setupListener(type, model, monitor) {
-            _.each(monitor, function (val, key) {
-                if (_.isObject(val)) {
-                    this.__setupListener(type, model[key], val);
-                } else {
-                    model[type]("change:" + key, this[val], this);
+        __updateValues: function setValues() {
+            return this.__setValues(this.model.changedAttributes());
+        },
+
+        __setValues: function __setValues(values) {
+            var monitors = this.__monitors;
+            if (monitors) {
+                _.each(values, function changedEach(val, key) {
+                    var mon = monitors[key];
+                    if (mon) {
+                        _.each(mon, function (fn) {
+                            fn(val);
+                        });
+                    }
+                });
+            }
+            return this;
+        },
+
+        setElData: function setElData(el, data, attribute) {
+            data = (data !== null && "undefined" !== typeof data) ? data : "";
+            this.$(el).text(data);
+        },
+
+        setupBinders: function setUpMonitors() {
+            var monitors = this.__monitors, setElData = _.bind(this.setElData, this);
+            this.$("[data-thumbs-bind]").each(function () {
+                var $el = $(this);
+                var m = $el.data("thumbs-bind");
+                if (!(m in monitors)) {
+                    monitors[m] = [];
                 }
-            }, this);
-        },
-
-        startMonitor: function startMonitor() {
-            this.__setupListener("on", this.model, this.monitor);
-        },
-
-        stopMonitor: function stopMonitor() {
-            this.__setupListener("off", this.model, this.monitor);
+                monitors[m].push(function monitor(data) {
+                    setElData($el, data, m);
+                });
+            });
+            var model = this.model;
+            model.on("change", this.__updateValues, this);
+            this.__setValues(model.attributes);
+            return this;
         },
 
         render: function render() {
-            this.startMonitor();
             this._super("render", arguments);
+            if (this.model) {
+                this.setupBinders();
+            }
+            return this;
         },
 
         remove: function remove() {
-            this.stopMonitor();
-            this._super("remove", arguments);
+            if (this.model) {
+                this.model.off("change", this.setValues, this);
+            }
+            this.__monitors = null;
+            return this._super("remove", arguments);
         }
+
     };
 
-    View = thumbs.View = View.extend(EventMonitor).extend({
+    View = thumbs.View = View.extend(Binder).extend({
         _subviews: null,
 
         initialize: function initialize(options) {
-            this._super("render", arguments);
+            this._super("initialize", arguments);
             this._subviews = {};
         },
 
@@ -169,6 +204,7 @@
         // compiled template run with the model data
         // override if that's not what's needed
         render: function render() {
+            this._super("render", arguments);
             this.assign(this._subviews);
             this.setupProperties();
             return this;
