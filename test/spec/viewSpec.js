@@ -62,7 +62,7 @@ describe("thumbs.View", function () {
                 var undelegateSpy = sinon.spy(sv2, 'undelegateEvents');
                 view.addSubView('#test', sv2);
                 view.addSubView('#test', subview);
-                expect(undelegateSpy).toHaveBeenCalledThrice();
+                expect(undelegateSpy).toHaveBeenCalled();
             });
 
             it("should be able to render a subview to a given selector in an already rendered view", function () {
