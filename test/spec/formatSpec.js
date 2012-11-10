@@ -29,8 +29,8 @@ describe("thumbs.View Formatter", function () {
 
     var TestView = View.extend({
         template: '<p>' +
-            '   <div data-thumbs-format="upperCase">{{firstName}}</div>' +
-            '   <div data-thumbs-format="lowerCase">{{lastName}}</div>' +
+            '   <div data-thumbs-format="upperCase"><%= firstName %></div>' +
+            '   <div data-thumbs-format="lowerCase"><%= lastName %></div>' +
             '</p>',
 
         upperCase: function (data) {
