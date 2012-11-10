@@ -2,9 +2,7 @@
 
     var root = this;
     var ArrayProto = Array.prototype;
-    var push = ArrayProto.push;
     var slice = ArrayProto.slice;
-    var splice = ArrayProto.splice;
 
     function argsToArray(args) {
         return slice.call(args, 0);
@@ -218,7 +216,8 @@
     var Formatter = {
 
         checkFormatting: function checkFormatting(el, data) {
-            var $el = this.$(el), args = argsToArray(arguments), data = args.length === 2 ? data : $el.text();
+            var $el = this.$(el), args = argsToArray(arguments);
+            data = args.length === 2 ? data : $el.text();
             data = (data !== null && "undefined" !== typeof data) ? data : "";
             var formatter = $el.data("thumbs-format");
             if (formatter && "function" === typeof this[formatter]) {
@@ -251,7 +250,7 @@
             } else {
                 return templater;
             }
-        }
+        };
     }());
 
     View = thumbs.View = View.extend(Formatter).extend(Identifier).extend(Binder).extend(EventDelegator).extend({
@@ -388,6 +387,8 @@
         fillTemplate: function fillTemplate() {
             if (this._template) {
                 return this._template(this.getTemplateData());
+            } else {
+                return null;
             }
         },
 
