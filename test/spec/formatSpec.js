@@ -1,4 +1,4 @@
-describe("thumbs.View Monitor", function () {
+describe("thumbs.View Formatter", function () {
     var View = thumbs.View.extend({
         template: null,
 
