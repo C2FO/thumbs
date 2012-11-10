@@ -1,4 +1,4 @@
-describe("a core/view", function () {
+describe("thumbs.View", function () {
 
 
     var View = thumbs.View.extend({
