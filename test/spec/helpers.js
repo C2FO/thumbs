@@ -9,6 +9,10 @@ beforeEach(function () {
 
         toBeABoolean: function () {
             return typeof this.actual === 'boolean';
+        },
+
+        toNotBeChecked: function () {
+            return !this.actual.is(':checked')
         }
     });
 

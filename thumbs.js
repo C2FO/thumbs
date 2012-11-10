@@ -208,7 +208,11 @@
                     monitors[m] = [];
                 }
                 monitors[m].push(function monitor(data) {
-                    setElData(el, data, type, m);
+                    if ("function" === typeof type) {
+                        type(el, data, m);
+                    } else {
+                        setElData(el, data, type, m);
+                    }
                 });
             }
 
@@ -227,8 +231,25 @@
                         throw new TypeError("Invalid data-thumbs-bind definition");
                     }
                 }
+            });
+
+            this.$("[data-thumbs-bind-class]").each(function () {
+                var el = this, $el = $(el);
+                var m = $el.data("thumbs-bind-class");
+                var mParts = _.map(m.split(":"), function (m) {
+                    return $.trim(m);
+                });
+                if (mParts.length === 2) {
+                    var clazz = mParts[0];
+                    setupType(mParts[1], el, function (el, data) {
+                        $el.toggleClass(clazz, data);
+                    });
+                } else {
+                    throw new TypeError("Invalid data-thumbs-bind definition");
+                }
 
             });
+
             var model = this.model;
             model.on("change", this.__updateValues, this);
             this.__setValues(model.attributes);
