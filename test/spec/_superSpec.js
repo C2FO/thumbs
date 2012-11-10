@@ -1,5 +1,5 @@
 describe('_super', function () {
-    var Model = Thumbs.Model.extend({
+    var Model = thumbs.Model.extend({
             greet: function (name) {
                 return "Hello, " + name;
             }
