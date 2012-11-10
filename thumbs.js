@@ -104,12 +104,14 @@
             var self = this;
             this.events = this.events || {};
             this.$('[data-thumbs-event]').each(function () {
-                var $this = $(this), data = $this.data('thumbs-event').split(':'),
-                    event = data[0], func = data[1];
-
+                var $this = $(this), events = $this.data('thumbs-event').split(/ +/);
                 var id = _.uniqueId('thumbs_');
                 $this.addClass(id);
-                self.events[event + ' .' + id] = func;
+                _.each(events, function (data) {
+                    data = data.split(':');
+                    var event = data[0], func = data[1];
+                    self.events[event + ' .' + id] = func;
+                });
             });
             this.delegateEvents();
             return this;
