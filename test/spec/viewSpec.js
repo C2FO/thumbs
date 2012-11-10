@@ -1,4 +1,4 @@
-describe("a core/view", function () {
+describe("thumbs.View", function () {
 
 
     var View = thumbs.View.extend({
@@ -13,9 +13,6 @@ describe("a core/view", function () {
 
         _getData: function () {
             var data = this.model ? this.model.toJSON() : this.collection ? data = this.collection.toJSON() : {};
-            if (this.locals) {
-                _.extend(data, this.locals);
-            }
             return data;
         },
 
@@ -37,11 +34,10 @@ describe("a core/view", function () {
         template: '<p>Hello</p>'
     });
 
-    var TestModel = thumbs.Model.extend({
-    });
-
+    var TestModel = thumbs.Model.extend({});
 
     beforeEach(function () {
+        this.model = new TestModel({firstName : "Bob", lastName : "Yukon"})
         this.view = new TestView({ model: this.model });
     });
 
