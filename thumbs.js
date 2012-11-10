@@ -309,6 +309,23 @@
 
     };
 
+    var ElFinder = {
+
+        findEl: function () {
+            var setElement = _.bind(this.setElement, this);
+            var el = this.$("[data-thumbs-el]").first().get();
+            if (el.length) {
+                setElement(el[0]);
+            }
+            return this;
+        },
+
+        render: function () {
+            return this.findEl()._super("render", arguments);
+        }
+
+    };
+
     thumbs.templater = (function _templater() {
         var templater = _.template;
         return function __templater(tmplr) {
@@ -328,7 +345,7 @@
         }
     });
 
-    View = thumbs.View = View.extend(Formatter).extend(Identifier).extend(Binder).extend(EventDelegator).extend({
+    View = thumbs.View = View.extend(ElFinder).extend(Formatter).extend(Identifier).extend(Binder).extend(EventDelegator).extend({
         _subviews: null,
 
         initialize: function initialize(options) {
