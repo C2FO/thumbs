@@ -179,7 +179,9 @@
         },
 
         __updateValues: function setValues() {
-            return this.__setValues(this.model.changedAttributes());
+            if (this.model && this.model instanceof Model) {
+                return this.__setValues(this.model.changedAttributes());
+            }
         },
 
         __setValues: function __setValues(values) {
@@ -301,7 +303,7 @@
                         }, this);
                     };
                     model.on(event, eventListeners.fn, this)
-                });
+                }, this);
             }
             return this;
         },
