@@ -100,6 +100,48 @@
     Collection = thumbs.Collection = Collection.extend(_super);
     Router = thumbs.Router = Router.extend(_super);
 
+    var EventDelegator = {
+        render: function render () {
+            this._super('render', arguments);
+            this.checkForEvents();
+            return this;
+        },
+
+        checkForEvents: function checkForEvents () {
+            var self = this;
+            this.events = this.events || {};
+            this.$('[data-thumbs-event]').each(function () {
+                var $this = $(this), data = $this.data('thumbs-event').split(':'),
+                    event = data[0], func = data[1];
+
+                var id = _.uniqueId('thumbs_');
+                $this.addClass(id);
+                self.events[event + ' .' + id] = func;
+            });
+            this.delegateEvents();
+            return this;
+        }
+    };
+
+    var Identifier = {
+        render: function render () {
+            this._super('render', arguments);
+            this.checkForIdentifiers();
+            return this;
+        },
+
+        checkForIdentifiers: function checkForIdentifiers () {
+            var self = this;
+            this.$('[data-thumbs-id]').each(function (el) {
+                var $this = $(this);
+                var id = $this.data('thumbs-id');
+                self[id] = this;
+                self['$' + id] = $this;
+            });
+            return this;
+        }
+    };
+
     var Binder = {
 
         __monitors: null,
@@ -176,7 +218,8 @@
     var Formatter = {
 
         checkFormatting: function checkFormatting(el, data) {
-            var $el = this.$(el), args = argsToArray(arguments), data = args.length === 2 ? data : $el.text();
+            var $el = this.$(el), args = argsToArray(arguments);
+            data = args.length === 2 ? data : $el.text();
             data = (data !== null && "undefined" !== typeof data) ? data : "";
             var formatter = $el.data("thumbs-format");
             if (formatter && "function" === typeof this[formatter]) {
@@ -201,7 +244,7 @@
 
     };
 
-    View = thumbs.View = View.extend(Binder).extend(Formatter).extend({
+    View = thumbs.View = View.extend(Formatter).extend(Identifier).extend(Binder).extend(EventDelegator).extend({
         _subviews: null,
 
         initialize: function initialize(options) {
@@ -242,7 +285,6 @@
         render: function render() {
             this._super("render", arguments);
             this.assign(this._subviews);
-            this.setupProperties();
             return this;
         },
 
@@ -260,17 +302,6 @@
                 }, this);
             }
 
-            return this;
-        },
-
-        setupProperties: function () {
-            var self = this;
-            this.$('[data-thumbs-id]').each(function (el) {
-                var $this = $(this);
-                var id = $this.data('thumbs-id');
-                self[id] = this;
-                self['$' + id] = $this;
-            });
             return this;
         },
 
