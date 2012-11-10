@@ -218,8 +218,7 @@
     var Formatter = {
 
         checkFormatting: function checkFormatting(el, data) {
-            var $el = this.$(el), args = argsToArray(arguments);
-            data = args.length === 2 ? data : $el.text();
+            var $el = this.$(el), args = argsToArray(arguments), data = args.length === 2 ? data : $el.text();
             data = (data !== null && "undefined" !== typeof data) ? data : "";
             var formatter = $el.data("thumbs-format");
             if (formatter && "function" === typeof this[formatter]) {
@@ -243,6 +242,17 @@
         }
 
     };
+
+    thumbs.templater = (function _templater(templater) {
+        var templater = _.template;
+        return function __templater(tmplr) {
+            if (tmplr) {
+                return (templater = tmplr);
+            } else {
+                return templater;
+            }
+        }
+    }());
 
     View = thumbs.View = View.extend(Formatter).extend(Identifier).extend(Binder).extend(EventDelegator).extend({
         _subviews: null,
@@ -310,6 +320,95 @@
             this.undelegateEvents();
             this.removeSubViews();
             return this._super('remove', arguments);
+        }
+    });
+
+    thumbs.TemplateView = View.extend({
+        /**@lends thumbs.TemplateView.prototype*/
+
+        /**
+         * The the `templater` to use to compile this view template. If not specified them {@link thumbs.templater}
+         * will be used.
+         *
+         * @example
+         *
+         * var MyView = thumbs.TemplateView.extend({
+         *     templater : function(template){
+         *          return Handlebars.compile(template);
+         *     },
+         *
+         *     template : "<div>{{firstName}}</div>"
+         * })
+         *
+         * @function
+         */
+        templater: thumbs.templater(),
+
+        /**
+         * The template string for this view.
+         *
+         * @example
+         * var MyView = thumbs.TemplateView.extend({
+         *     template : "<div>{{firstName}}</div>"
+         * });
+         *
+         */
+        template: null,
+
+        initialize: function (options) {
+            this._super("initialize", arguments);
+            if (this.template) {
+                this._template = this.templater(this.template);
+            }
+        },
+
+        /**
+         * Gathers data to be interpolated into the template. By default serializes the model to json.
+         *
+         * @example
+         * var MyView = thumbs.TemplateView.extend({
+         *     template : "<div><div>{{i18n.hello}}<div> <div>{{firstName}}</div> </div>",
+         *     getTemplateData : function(){
+         *         var data = this._super("getTemplateData", arguments);
+         *         data.i18n = {hello : "Hello"};
+         *         return data;
+         *     }
+         * });
+         *
+         * @return {Object} Object with key value pairs to be interpolated into the View.
+         */
+        getTemplateData: function () {
+            return this.model ? this.model.toJSON() : {};
+        },
+
+        /**
+         * Fills the template with the data gathered from {@link thumbs.TemplateView#getTemplateData}
+         * @return {thumbs.TemplateView} this for chaining.
+         */
+        fillTemplate: function fillTemplate() {
+            if (this._template) {
+                return this._template(this.getTemplateData());
+            }
+        },
+
+        /**
+         * Renders the the template.
+         *
+         * @return this
+         */
+        renderTemplate: function renderTemplate() {
+            if (this._template) {
+                var template = this.fillTemplate();
+                if (template) {
+                    this.$el.html(template);
+                }
+            }
+            return this;
+        },
+
+        render: function () {
+            //call render template
+            return this.renderTemplate()._super("render", arguments);
         }
     });
 
