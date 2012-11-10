@@ -1,7 +1,7 @@
 describe("thumbs.View event", function () {
     describe("single events", function () {
         var spy = sinon.spy(), View = thumbs.View.extend({
-            template: '<button data-thumbs-event="click:testFunc">Test Button</button>',
+            template: '<button data-thumbs-delegate="click:testFunc">Test Button</button>',
             render: function () {
                 this.$el.html(this.template);
                 return this._super('render', arguments);
@@ -35,7 +35,7 @@ describe("thumbs.View event", function () {
 
     describe("multiple events", function () {
         var spy = sinon.spy(), View = thumbs.View.extend({
-            template: '<button data-thumbs-event="click:testFunc focus:testFunc">Test Button</button>',
+            template: '<button data-thumbs-delegate="click:testFunc focus:testFunc">Test Button</button>',
             render: function () {
                 this.$el.html(this.template);
                 return this._super('render', arguments);
