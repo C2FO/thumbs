@@ -116,7 +116,7 @@ describe("thumbs.View Monitor", function () {
 
     });
 
-    describe("should support data-thumbs-bind-class", function () {
+    describe("data-thumbs-bind-class", function () {
 
         var TestView = View.extend({
             template: '<p data-thumbs-bind-class="visible:isChecked"></p>'
@@ -133,6 +133,64 @@ describe("thumbs.View Monitor", function () {
         it("should set initial values", function () {
             this.view.render();
             expect(this.view.$('[data-thumbs-bind-class="visible:isChecked"]')).toHaveClass("visible");
+        });
+
+    });
+
+    describe("data-thumbs-bind-event", function () {
+        var changeSpy = sinon.spy(),
+            destroySpy = sinon.spy(),
+            syncSpy = sinon.spy(),
+            errorSpy = sinon.spy(),
+            TestView = thumbs.View.extend({
+                template: '<div data-thumbs-el data-thumbs-bind-event="change:modelChange destroy:modelDestroy sync:modelSync error:modelError">' +
+                    '   <button data-thumbs-bind="val:lastName"></button>' +
+                    '</div>',
+                render: function () {
+                    this.$el.html(this.template);
+                    return this._super('render', arguments);
+                },
+                modelChange: changeSpy,
+                modelDestroy: destroySpy,
+                modelSync: syncSpy,
+                modelError: errorSpy
+            });
+
+
+        var TestModel = thumbs.Model.extend({});
+
+        beforeEach(function () {
+            this.model = new TestModel({isChecked: true, lastName: "Yukon"});
+            this.view = new TestView({ model: this.model });
+        });
+
+        it("should set initial values", function () {
+            this.view.render();
+            this.model.trigger("change");
+            expect(changeSpy).toHaveBeenCalledOnce();
+            expect(destroySpy).toHaveNotBeenCalled();
+            expect(syncSpy).toHaveNotBeenCalled();
+            expect(errorSpy).toHaveNotBeenCalled();
+
+            this.model.trigger("sync");
+            expect(changeSpy).toHaveBeenCalledOnce();
+            expect(syncSpy).toHaveBeenCalledOnce();
+            expect(errorSpy).toHaveNotBeenCalled();
+            expect(destroySpy).toHaveNotBeenCalled();
+
+            this.model.trigger("error");
+            expect(changeSpy).toHaveBeenCalledOnce();
+            expect(syncSpy).toHaveBeenCalledOnce();
+            expect(errorSpy).toHaveBeenCalledOnce();
+            expect(destroySpy).toHaveNotBeenCalled();
+
+            this.model.trigger("destroy");
+            expect(changeSpy).toHaveBeenCalledOnce();
+            expect(syncSpy).toHaveBeenCalledOnce();
+            expect(errorSpy).toHaveBeenCalledOnce();
+            expect(destroySpy).toHaveBeenCalledOnce();
+
+
         });
 
     });
