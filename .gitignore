@@ -1,6 +1,6 @@
 node_modules/
 .DS_Store
-.vimrc.project
+.vimrc*
 lib-cov/
 util/idea/c2fo.iws
 .ackrc
