@@ -184,10 +184,22 @@
             } else {
                 data = (data !== null && "undefined" !== typeof data) ? data : "";
                 var $el = this.$(el);
-                if ("function" === typeof $el[type]) {
-                    $el[type](data)
+                if (type) {
+                    if ("function" === typeof $el[type]) {
+                        $el[type](data);
+                    } else {
+                        $el.attr(type, data);
+                    }
                 } else {
-                    $el.attr(type, data);
+                    if ($el.is("input")) {
+                        if ($el.is("[type=checkbox], [type=radio]")) {
+                            $el.attr("checked", data);
+                        } else {
+                            $el.val(data);
+                        }
+                    } else {
+                        $el.text(data);
+                    }
                 }
             }
         },
@@ -212,7 +224,7 @@
                 var $el = $(el);
                 splitParts($el.data("thumbs-bind"), function (mParts) {
                     if (mParts.length === 1) {
-                        setupType(mParts[0], el, "text");
+                        setupType(mParts[0], el);
                     } else if (mParts.length === 2) {
                         setupType(mParts[1], el, mParts[0]);
                     } else {
@@ -255,6 +267,10 @@
             this.$("[data-thumbs-bind]").each(function () {
                 setupBind(this);
             });
+            this.$("[data-thumbs-bind-event]").each(function () {
+                setupEventBind(this);
+            });
+
             this.$("[data-thumbs-bind-class]").each(function () {
                 setupClassBind(this);
             });
@@ -324,7 +340,6 @@
     var Formatter = {
 
         checkFormatting: function checkFormatting(el, data, type) {
-            type = type || "text";
             var $el = this.$(el), args = argsToArray(arguments);
             data = args.length === 3 ? data : $el.text();
             data = (data !== null && "undefined" !== typeof data) ? data : "";
@@ -334,10 +349,22 @@
             if (formatter && "function" === typeof this[formatter]) {
                 data = this[formatter](data);
             }
-            if ("function" === typeof $el[type]) {
-                $el[type](data)
+            if (type) {
+                if ("function" === typeof $el[type]) {
+                    $el[type](data);
+                } else {
+                    $el.attr(type, data);
+                }
             } else {
-                $el.attr(type, data);
+                if ($el.is("input")) {
+                    if ($el.is("[type=checkbox], [type=radio]")) {
+                        $el.attr("checked", data);
+                    } else {
+                        $el.val(data);
+                    }
+                } else {
+                    $el.text(data);
+                }
             }
         },
 
