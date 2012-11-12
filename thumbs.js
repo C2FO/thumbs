@@ -11,6 +11,11 @@
     var thumbs;
     if (typeof exports !== 'undefined') {
         thumbs = exports;
+    } else if (typeof define === "function" && define.amd) {
+        define(function () { 
+            thumbs = {};
+            return thumbs;
+        });
     } else {
         thumbs = root.thumbs = {};
     }
@@ -412,8 +417,5 @@
             return this.renderTemplate()._super("render", arguments);
         }
     });
-
-    return View;
-
 
 }).call(this);
