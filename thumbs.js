@@ -12,7 +12,7 @@
     if (typeof exports !== 'undefined') {
         thumbs = exports;
     } else if (typeof define === "function" && define.amd) {
-        define(function () { 
+        define(function () {
             thumbs = {};
             return thumbs;
         });
