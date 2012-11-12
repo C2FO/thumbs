@@ -113,7 +113,7 @@
 
         __getArrayPath: function (path) {
             var arrayPath = "";
-            path.split(".")
+            path.split(".");
             return arrayPath;
         },
 
