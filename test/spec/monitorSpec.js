@@ -80,6 +80,42 @@ describe("thumbs.View Monitor", function () {
 
     });
 
+    describe("data-thumbs-bind with specified with form fields", function () {
+
+        var TestView = View.extend({
+            template: '<p><input type="radio" data-thumbs-bind="isChecked"/><input data-thumbs-bind="lastName"/></p>'
+        });
+
+
+        var TestModel = thumbs.Model.extend({});
+
+        beforeEach(function () {
+            this.model = new TestModel({isChecked: true, lastName: "Yukon"});
+            this.view = new TestView({ model: this.model });
+        });
+
+        it("should set initial values", function () {
+            this.view.render();
+            expect(this.view.$('[data-thumbs-bind="isChecked"]')).toBeChecked();
+            expect(this.view.$('[data-thumbs-bind="lastName"]')).toHaveValue("Yukon");
+        });
+
+        it("should update values", function () {
+            this.view.render();
+            this.model.set({isChecked: false, lastName: "YUKON"});
+            expect(this.view.$('[data-thumbs-bind="isChecked"]')).toNotBeChecked();
+            expect(this.view.$('[data-thumbs-bind="lastName"]')).toHaveValue("YUKON");
+        });
+
+        it("should update values", function () {
+            this.view.render();
+            this.model.set({isChecked: false, lastName: null});
+            expect(this.view.$('[data-thumbs-bind="isChecked"]')).toNotBeChecked();
+            expect(this.view.$('[data-thumbs-bind="lastName"]')).toHaveValue("");
+        });
+
+    });
+
     describe("should set monitor properties based on data-thumbs-bind with specified values", function () {
 
         var TestView = View.extend({
