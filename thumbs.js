@@ -121,13 +121,27 @@
             var self = this;
             this.$('[data-thumbs-view]').each(function () {
                 /*jshint evil:true */
-                var $this = $(this), v = $this.data('thumbs-view');
+                var $this = $(this),
+                    v = $this.data('thumbs-view'),
+                    a = $this.data('thumbs-args'),
+                    args = {};
+
+                if (a) {
+                    _.each(a.split(","), function (arg) {
+                        arg = arg.split(":");
+                        args[arg[0]] = arg[1];
+                    }, this);
+                }
+
+                _.extend(args, { el: this});
+
                 if (v.indexOf("/") >= 0 && typeof require === "function") {
-                    // TODO: implement AMD support
-                    console.log("AMD support coming soon");
+                    require([v], function (_View) {
+                        new _View(args).render();
+                    });
                 } else if (v.indexOf(".") >= 0) {
                     // assume that this is a global path
-                    eval("new "+v+"({ el: this }).render();");
+                    eval("new "+v+"(args).render();");
                 } else {
                     throw new Error("Unknown Subview Error");
                 }
