@@ -100,6 +100,7 @@
 
     var Subview = {
         _subviews: null,
+
         initialize: function () {
             this._super('initialize', arguments);
             this._subviews = [];
@@ -111,10 +112,12 @@
             return this;
         },
 
-        __getArrayPath: function (path) {
-            var arrayPath = "";
-            path.split(".");
-            return arrayPath;
+        remove: function () {
+            this._subviews.length && _.each(this._subviews, function (subview) {
+                subview.remove();
+            });
+            this._subviews = [];
+            return this._super('remove', arguments);
         },
 
         checkForSubviews: function () {
@@ -122,6 +125,7 @@
             this.$('[data-thumbs-view]').each(function () {
                 /*jshint evil:true */
                 var $this = $(this),
+                    view = null,
                     v = $this.data('thumbs-view'),
                     a = $this.data('thumbs-args'),
                     args = {};
@@ -137,14 +141,16 @@
 
                 if (v.indexOf("/") >= 0 && typeof require === "function") {
                     require([v], function (View) {
-                        new View(args).render();
+                        view = new View(args).render();
                     });
                 } else if (v.indexOf(".") >= 0) {
                     // assume that this is a global path
-                    eval("new "+v+"(args).render();");
+                    eval("view = new "+v+"(args).render();");
                 } else {
                     throw new Error("Unknown Subview Error");
                 }
+
+                self._subviews.push(view);
             });
         },
     };
@@ -307,47 +313,6 @@
     View = thumbs.View = View.extend(Subview).extend(Formatter).extend(Identifier).extend(Binder).extend(EventDelegator).extend({
         _subviews: null,
 
-        initialize: function initialize(options) {
-            this._super("initialize", arguments);
-            this._subviews = {};
-        },
-
-        addSubView: function addSubView(selector, view) {
-            this.removeSubView(selector);
-            this._subviews[selector] = view;
-            view.setElement(this.$(selector)).render();
-            //this.assign(this._subviews);
-            return this;
-        },
-
-        removeSubView: function removeSubView(selector) {
-            var view = this._subviews[selector];
-            if (view) {
-                // undelegate events, but we won't remove the element
-                view.setElement(null);
-                view.remove();
-                this.$(selector).empty();
-                delete this._subviews[selector];
-            }
-            return this;
-        },
-
-        removeSubViews: function removeSubViews() {
-            _.each(this._subviews, function (view, selector) {
-                this.removeSubView(selector);
-            }, this);
-            return this;
-        },
-
-        // default render functionality is to set the el html to the
-        // compiled template run with the model data
-        // override if that's not what's needed
-        render: function render() {
-            this._super("render", arguments);
-            this.assign(this._subviews);
-            return this;
-        },
-
         assign: function assign(selector, view) {
             var selectors;
             if (_.isObject(selector)) {
@@ -368,7 +333,6 @@
         // when a view is removed, remove all event bindings
         remove: function remove() {
             this.undelegateEvents();
-            this.removeSubViews();
             return this._super('remove', arguments);
         }
     });

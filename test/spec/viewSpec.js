@@ -43,7 +43,8 @@ describe("thumbs.View", function () {
 
     describe("on rendering", function () {
 
-        describe("subviews", function () {
+        // temporarily removing this to consider adding it to the subvewSpec
+        xdescribe("subviews", function () {
             var TestMainView = View.extend({ template: '<div id="test"></div>' }),
                 TestSubView = View.extend({ template: '<div class="foo"></div>' }),
                 view = null, subview = null;

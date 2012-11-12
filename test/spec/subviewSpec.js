@@ -62,4 +62,11 @@ describe("thumbs.View subview", function () {
             view.render(errTmpl);
         }).toThrow(new Error("Unknown Subview Error"));
     });
+
+    it("calls remove on the subviews when the parent is removed", function () {
+        view.render(dotTmpl);
+        expect(view._subviews.length).toBeGreaterThan(0);
+        view.remove();
+        expect(view._subviews.length).toBe(0);
+    });
 });
