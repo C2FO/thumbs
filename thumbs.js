@@ -414,10 +414,11 @@
     thumbs.Router = Router.extend({
         route: function route(route, name, callback) {
             this._super("route", arguments);
-            thumbs.history = Backbone.history;
+            !thumbs.history && (thumbs.history = Backbone.history);
             return this;
         }
     });
+
 
     View = thumbs.View = View.extend(ElFinder).extend(Formatter).extend(Identifier).extend(Binder).extend(EventDelegator).extend({
         _subviews: null,
