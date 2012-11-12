@@ -136,8 +136,8 @@
                 _.extend(args, { el: this});
 
                 if (v.indexOf("/") >= 0 && typeof require === "function") {
-                    require([v], function (_View) {
-                        new _View(args).render();
+                    require([v], function (View) {
+                        new View(args).render();
                     });
                 } else if (v.indexOf(".") >= 0) {
                     // assume that this is a global path
