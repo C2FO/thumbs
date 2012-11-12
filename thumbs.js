@@ -127,10 +127,26 @@
     };
 
     var Identifier = {
+        __identifiers: null,
+
+        initialize: function () {
+            this.__identifiers = [];
+            this._super('initialize', arguments);
+        },
+
         render: function render() {
             this._super('render', arguments);
             this.checkForIdentifiers();
             return this;
+        },
+
+        remove: function () {
+            _.each(this.__identifiers, function (id) {
+                delete this[id],
+                delete this['$' + id];
+            }, this);
+            this.__identifiers = [];
+            return this._super('remove', arguments);
         },
 
         checkForIdentifiers: function checkForIdentifiers() {
@@ -140,6 +156,7 @@
                 var id = $this.data('thumbs-id');
                 self[id] = this;
                 self['$' + id] = $this;
+                self.__identifiers.push(id);
             });
             return this;
         }
