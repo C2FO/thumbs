@@ -98,6 +98,43 @@
     Collection = thumbs.Collection = Collection.extend(_super);
     Router = thumbs.Router = Router.extend(_super);
 
+    var Subview = {
+        _subviews: null,
+        initialize: function () {
+            this._super('initialize', arguments);
+            this._subviews = [];
+        },
+
+        render: function () {
+            this._super('render', arguments);
+            this.checkForSubviews();
+            return this;
+        },
+
+        __getArrayPath: function (path) {
+            var arrayPath = "";
+            path.split(".")
+            return arrayPath;
+        },
+
+        checkForSubviews: function () {
+            var self = this;
+            this.$('[data-thumbs-view]').each(function () {
+                /*jshint evil:true */
+                var $this = $(this), v = $this.data('thumbs-view');
+                if (v.indexOf("/") >= 0 && typeof require === "function") {
+                    // TODO: implement AMD support
+                    console.log("AMD support coming soon");
+                } else if (v.indexOf(".") >= 0) {
+                    // assume that this is a global path
+                    eval("new "+v+"({ el: this }).render();");
+                } else {
+                    throw new Error("Unknown Subview Error");
+                }
+            });
+        },
+    };
+
     var EventDelegator = {
         render: function render() {
             this._super('render', arguments);
@@ -253,7 +290,7 @@
         };
     }());
 
-    View = thumbs.View = View.extend(Formatter).extend(Identifier).extend(Binder).extend(EventDelegator).extend({
+    View = thumbs.View = View.extend(Subview).extend(Formatter).extend(Identifier).extend(Binder).extend(EventDelegator).extend({
         _subviews: null,
 
         initialize: function initialize(options) {
