@@ -8,18 +8,7 @@
         return slice.call(args, 0);
     }
 
-    var thumbs;
-    if (typeof exports !== 'undefined') {
-        thumbs = exports;
-    } else if (typeof define === "function" && define.amd) {
-        define(function () {
-            thumbs = {};
-            return thumbs;
-        });
-    } else {
-        thumbs = root.thumbs = {};
-    }
-
+    var thumbs = {};
 
     // Require Underscore, if we're on the server, and it's not already present.
     var _ = root._;
@@ -36,10 +25,20 @@
 
     // Current version of the library. Keep in sync with `package.json`.
     thumbs.VERSION = '0.0.0';
+    thumbs.MULTI_ARG_TOKEN = / +/;
+    thumbs.KEY_VALUE_TOKEN = ":";
 
 
     //copy over Backbones $ for dom
     var Model = thumbs.Model, View = thumbs.View, Collection = thumbs.Collection, Router = thumbs.Router, History = thumbs.History;
+
+    function splitParts(m, cb) {
+        return _.each(m.split(thumbs.MULTI_ARG_TOKEN), function (m) {
+            cb(_.map(m.split(thumbs.KEY_VALUE_TOKEN), function (m) {
+                return $.trim(m);
+            }));
+        });
+    }
 
     var _super = {
         _super: (function _super() {
@@ -113,13 +112,13 @@
         checkForEvents: function checkForEvents() {
             var self = this;
             this.events = this.events || {};
-            this.$('[data-thumbs-event]').each(function () {
-                var $this = $(this), data = $this.data('thumbs-event').split(':'),
-                    event = data[0], func = data[1];
-
-                var id = _.uniqueId('thumbs_');
+            this.$('[data-thumbs-delegate]').each(function () {
+                var $this = $(this), id = _.uniqueId('thumbs_');
                 $this.addClass(id);
-                self.events[event + ' .' + id] = func;
+                splitParts($this.data('thumbs-delegate'), function (data) {
+                    var event = data[0], func = data[1];
+                    self.events[event + ' .' + id] = func;
+                });
             });
             this.delegateEvents();
             return this;
@@ -165,13 +164,18 @@
 
         __monitors: null,
 
+        __events: null,
+
         initialize: function initialize() {
             this._super("initialize", arguments);
             this.__monitors = {};
+            this.__events = {};
         },
 
         __updateValues: function setValues() {
-            return this.__setValues(this.model.changedAttributes());
+            if (this.model && this.model instanceof Model) {
+                return this.__setValues(this.model.changedAttributes());
+            }
         },
 
         __setValues: function __setValues(values) {
@@ -189,46 +193,170 @@
             return this;
         },
 
-        setElData: function setElData(el, data, attribute) {
+        setElData: function setElData(el, data, type, attribute) {
             if (this.checkFormatting) {
-                this.checkFormatting(el, data);
+                this.checkFormatting(el, data, type);
             } else {
                 data = (data !== null && "undefined" !== typeof data) ? data : "";
-                this.$(el).text(data);
+                var $el = this.$(el);
+                if (type) {
+                    if ("function" === typeof $el[type]) {
+                        $el[type](data);
+                    } else {
+                        $el.attr(type, data);
+                    }
+                } else {
+                    if ($el.is("input")) {
+                        if ($el.is("[type=checkbox], [type=radio]")) {
+                            $el.attr("checked", data);
+                        } else {
+                            $el.val(data);
+                        }
+                    } else {
+                        $el.text(data);
+                    }
+                }
             }
         },
 
-        setupBinders: function setUpMonitors() {
-            var monitors = this.__monitors, setElData = _.bind(this.setElData, this);
-            this.$("[data-thumbs-bind]").each(function () {
-                var el = this, $el = $(el);
-                var m = $el.data("thumbs-bind");
+        findThumbsBind: function findThumbsBind() {
+            var monitors = this.__monitors, events = this.__events, setElData = _.bind(this.setElData, this);
+
+            function setupType(m, el, type) {
                 if (!(m in monitors)) {
                     monitors[m] = [];
                 }
                 monitors[m].push(function monitor(data) {
-                    setElData(el, data, m);
+                    if ("function" === typeof el) {
+                        el(data, m);
+                    } else {
+                        setElData(el, data, type, m);
+                    }
                 });
+            }
+
+            function setupBind(el) {
+                var $el = $(el);
+                splitParts($el.data("thumbs-bind"), function (mParts) {
+                    if (mParts.length === 1) {
+                        setupType(mParts[0], el);
+                    } else if (mParts.length === 2) {
+                        setupType(mParts[1], el, mParts[0]);
+                    } else {
+                        throw new TypeError("Invalid data-thumbs-bind definition");
+                    }
+                });
+            }
+
+            function setupClassBind(el) {
+                var $el = $(el);
+                splitParts($el.data("thumbs-bind-class"), function (mParts) {
+                    if (mParts.length === 2) {
+                        var clazz = mParts[0];
+                        setupType(mParts[1], function (data) {
+                            $el.toggleClass(clazz, data);
+                        });
+                    } else {
+                        throw new TypeError("Invalid data-thumbs-bind-class definition");
+                    }
+                });
+            }
+
+            var view = this;
+
+            function setupEventBind(el) {
+                var $el = $(el);
+                splitParts($el.data("thumbs-bind-event"), function (mParts) {
+                    if (mParts.length === 2) {
+                        var event = mParts[0], eventListeners = events[event];
+                        if (!eventListeners) {
+                            eventListeners = events[event] = [];
+                        }
+                        eventListeners.push(view[mParts[1]]);
+                    } else {
+                        throw new TypeError("Invalid data-thumbs-bind-class definition");
+                    }
+                });
+            }
+
+            this.$("[data-thumbs-bind]").each(function () {
+                setupBind(this);
             });
-            var model = this.model;
-            model.on("change", this.__updateValues, this);
+            this.$("[data-thumbs-bind-event]").each(function () {
+                setupEventBind(this);
+            });
+
+            this.$("[data-thumbs-bind-class]").each(function () {
+                setupClassBind(this);
+            });
+            if (this.$el.is("[data-thumbs-bind]")) {
+                setupBind(this.el);
+            }
+            if (this.$el.is("[data-thumbs-bind-class]")) {
+                setupClassBind(this.el);
+            }
+            if (this.$el.is("[data-thumbs-bind-event]")) {
+                setupEventBind(this.el);
+            }
+            return this;
+        },
+
+        turnOnModelListeners: function turnOnModelListeners() {
+            var model = this.model || this.collection;
+            if (model) {
+                _.each(this.__monitors, function (modelListeners, event) {
+                    modelListeners.fn = function eventListenersFn(model, val) {
+                        _.each(modelListeners, function (l) {
+                            l.apply(this, [val]);
+                        }, this);
+                    };
+                    model.on("change:" + event, modelListeners.fn, this);
+                });
+                _.each(this.__events, function (eventListeners, event) {
+                    eventListeners.fn = function eventListenersFn() {
+                        var args = arguments;
+                        _.each(eventListeners, function (l) {
+                            l.apply(this, args);
+                        }, this);
+                    };
+                    model.on(event, eventListeners.fn, this)
+                }, this);
+            }
+            return this;
+        },
+
+        turnOffModelListeners: function turnOnModelListeners() {
+            var model = this.model || this.collection;
+            if (model) {
+                _.each(this.__monitors, function (modelListeners, event) {
+                    model.off("change:" + event, modelListeners.fn, this)
+                });
+                _.each(this.__events, function (eventListeners, event) {
+                    model.off(event, eventListeners.fn, this)
+                });
+            }
+            return this;
+        },
+
+
+        setupBinders: function setUpMonitors() {
+            var model = this.model || this.collection;
+            this.findThumbsBind().turnOnModelListeners();
             this.__setValues(model.attributes);
             return this;
         },
 
         render: function render() {
             this._super("render", arguments);
-            if (this.model) {
+            if (this.model || this.collection) {
                 this.setupBinders();
             }
             return this;
         },
 
         remove: function remove() {
-            if (this.model) {
-                this.model.off("change", this.setValues, this);
-            }
-            this.__monitors = null;
+            this.turnOffModelListeners();
+            this.__monitors = this.__events = null;
             return this._super("remove", arguments);
         }
 
@@ -236,15 +364,38 @@
 
     var Formatter = {
 
-        checkFormatting: function checkFormatting(el, data) {
+        checkFormatting: function checkFormatting(el, data, type) {
             var $el = this.$(el), args = argsToArray(arguments);
-            data = args.length === 2 ? data : $el.text();
+            data = args.length === 3 ? data : $el.text();
             data = (data !== null && "undefined" !== typeof data) ? data : "";
             var formatter = $el.data("thumbs-format");
+            splitParts(formatter || "", function (formatterParts) {
+                if (formatterParts.length == 2) {
+                    type = formatterParts[0];
+                    formatter = formatterParts[1];
+                } else {
+                    formatter = formatterParts.pop();
+                }
+            });
             if (formatter && "function" === typeof this[formatter]) {
-                $el.text(this[formatter](data));
+                data = this[formatter](data);
+            }
+            if (type) {
+                if ("function" === typeof $el[type]) {
+                    $el[type](data);
+                } else {
+                    $el.attr(type, data);
+                }
             } else {
-                $el.text(data);
+                if ($el.is("input")) {
+                    if ($el.is("[type=checkbox], [type=radio]")) {
+                        $el.attr("checked", data);
+                    } else {
+                        $el.val(data);
+                    }
+                } else {
+                    $el.text(data);
+                }
             }
         },
 
@@ -263,6 +414,23 @@
 
     };
 
+    var ElFinder = {
+
+        findEl: function () {
+            var setElement = _.bind(this.setElement, this);
+            var el = this.$("[data-thumbs-el]").first().get();
+            if (el.length) {
+                setElement(el[0]);
+            }
+            return this;
+        },
+
+        render: function () {
+            return this.findEl()._super("render", arguments);
+        }
+
+    };
+
     thumbs.templater = (function _templater() {
         var templater = _.template;
         return function __templater(tmplr) {
@@ -274,7 +442,16 @@
         };
     }());
 
-    View = thumbs.View = View.extend(Formatter).extend(Identifier).extend(Binder).extend(EventDelegator).extend({
+    thumbs.Router = Router.extend({
+        route: function route(route, name, callback) {
+            this._super("route", arguments);
+            !thumbs.history && (thumbs.history = Backbone.history);
+            return this;
+        }
+    });
+
+
+    View = thumbs.View = View.extend(ElFinder).extend(Formatter).extend(Identifier).extend(Binder).extend(EventDelegator).extend({
         _subviews: null,
 
         initialize: function initialize(options) {
@@ -433,5 +610,18 @@
             return this.renderTemplate()._super("render", arguments);
         }
     });
+
+    if ("undefined" !== typeof exports) {
+        if ("undefined" !== typeof module && module.exports) {
+            module.exports = thumbs;
+        }
+    } else if ("function" === typeof define) {
+        define(function () {
+            return thumbs;
+        });
+    } else {
+        this.thumbs = thumbs;
+    }
+
 
 }).call(this);
