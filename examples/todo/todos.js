@@ -125,9 +125,6 @@ $(function () {
 
         initialize: function () {
             this._super("initialize", arguments);
-            this.collection.fetch();
-            this.render();
-            this.updateStats();
         },
 
         //Update our statistics
@@ -179,5 +176,6 @@ $(function () {
 
     // Finally, we kick things off by creating the **App**.
     new AppView({el: "#todoapp", collection: (Todos = new TodoList)}).render();
+    Todos.fetch();
 
 });
