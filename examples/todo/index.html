@@ -17,15 +17,17 @@
     </header>
 
     <section id="main" data-thumbs-id="main">
-        <input id="toggle-all" type="checkbox" data-thumbs-id="allCheckbox"
+        <input id="toggle-all" type="checkbox" data-thumbs-format="formatAllCheckBox" data-thumbs-bind="remainingCount" data-thumbs-id="allCheckbox"
                data-thumbs-delegate="click:toggleAllComplete">
         <label for="toggle-all">Mark all as complete</label>
         <ul id="todo-list" data-thumbs-id="todoList"></ul>
     </section>
 
     <footer data-thumbs-id="footer">
-        <a id="clear-completed" data-thumbs-id="clearCompletedA" data-thumbs-delegate="click:clearCompleted" data-thumbs-format="formatClear"></a>
-        <div class="todo-count" data-thumbs-id="todoCountDiv" data-thumbs-format="formatTodoCount"></div>
+        <a id="clear-completed" data-thumbs-bind="completedCount" data-thumbs-id="clearCompletedA"
+           data-thumbs-delegate="click:clearCompleted" data-thumbs-format="formatClear"></a>
+        <div class="todo-count" data-thumbs-bind="html:remainingCount" data-thumbs-id="todoCountDiv"
+             data-thumbs-format="html:formatTodoCount"></div>
     </footer>
 
 </div>

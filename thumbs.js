@@ -308,9 +308,16 @@
         },
 
         turnOnModelListeners: function turnOnModelListeners() {
-            var model = this.model;
+            var model = this.model || this.collection;
             if (model) {
-                model.on("change", this.__updateValues, this);
+                _.each(this.__monitors, function (modelListeners, event) {
+                    modelListeners.fn = function eventListenersFn(model, val) {
+                        _.each(modelListeners, function (l) {
+                            l.apply(this, [val]);
+                        }, this);
+                    };
+                    model.on("change:" + event, modelListeners.fn, this);
+                });
                 _.each(this.__events, function (eventListeners, event) {
                     eventListeners.fn = function eventListenersFn() {
                         var args = arguments;
@@ -325,9 +332,11 @@
         },
 
         turnOffModelListeners: function turnOnModelListeners() {
-            var model = this.model;
+            var model = this.model || this.collection;
             if (model) {
-                model.off("change", this.__updateValues, this);
+                _.each(this.__monitors, function (modelListeners, event) {
+                    model.off("change:" + event, modelListeners.fn, this)
+                });
                 _.each(this.__events, function (eventListeners, event) {
                     model.off(event, eventListeners.fn, this)
                 });
@@ -337,14 +346,15 @@
 
 
         setupBinders: function setUpMonitors() {
+            var model = this.model || this.collection;
             this.findThumbsBind().turnOnModelListeners();
-            this.__setValues(this.model.attributes);
+            this.__setValues(model.attributes);
             return this;
         },
 
         render: function render() {
             this._super("render", arguments);
-            if (this.model) {
+            if (this.model || this.collection) {
                 this.setupBinders();
             }
             return this;
@@ -364,9 +374,15 @@
             var $el = this.$(el), args = argsToArray(arguments);
             data = args.length === 3 ? data : $el.text();
             data = (data !== null && "undefined" !== typeof data) ? data : "";
-
             var formatter = $el.data("thumbs-format");
-            data = (data !== null && "undefined" !== typeof data) ? data : "";
+            splitParts(formatter || "", function (formatterParts) {
+                if (formatterParts.length == 2) {
+                    type = formatterParts[0];
+                    formatter = formatterParts[1];
+                } else {
+                    formatter = formatterParts.pop();
+                }
+            });
             if (formatter && "function" === typeof this[formatter]) {
                 data = this[formatter](data);
             }
