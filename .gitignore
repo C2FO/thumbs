@@ -1,10 +1,7 @@
 node_modules/
 .DS_Store
 .vimrc*
-lib-cov/
-util/idea/c2fo.iws
 .ackrc
 .idea/
-util/idea/c2fo/.idea/workspace.xml
-frontend/assets/css/*.css
 npm-debug.log
+9

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>thumbs.js Todos</title>
+    <link rel="stylesheet" href="todos.css"/>
+</head>
+
+<body>
+
+<div id="todoapp" data-thumbs-el data-thumbs-bind-event="add:addOne reset:addAll all:updateStats">
+    <header>
+        <h1>Todos</h1>
+        <input id="new-todo" type="text" data-thumbs-id="input" data-thumbs-delegate="keypress:createOnEnter"
+               placeholder="What needs to be done?">
+    </header>
+
+    <section id="main" data-thumbs-id="main">
+        <input id="toggle-all" type="checkbox" data-thumbs-format="formatAllCheckBox" data-thumbs-bind="remainingCount" data-thumbs-id="allCheckbox"
+               data-thumbs-delegate="click:toggleAllComplete">
+        <label for="toggle-all">Mark all as complete</label>
+        <ul id="todo-list" data-thumbs-id="todoList"></ul>
+    </section>
+
+    <footer data-thumbs-id="footer">
+        <a id="clear-completed" data-thumbs-bind="completedCount" data-thumbs-id="clearCompletedA"
+           data-thumbs-delegate="click:clearCompleted" data-thumbs-format="formatClear"></a>
+        <div class="todo-count" data-thumbs-bind="html:remainingCount" data-thumbs-id="todoCountDiv"
+             data-thumbs-format="html:formatTodoCount"></div>
+    </footer>
+
+</div>
+
+<div id="instructions">
+    Double-click to edit a todo.
+</div>
+
+<div id="credits">
+    Created by
+    <br/>
+    <a href="http://github.com/doug-martin">Doug Martin</a>.
+    <br/>Rewritten by: <a href="http://addyosmani.github.com/todomvc">TodoMVC</a>.
+</div>
+
+<script src="../assets/json2.js"></script>
+<script src="../assets/jquery.js"></script>
+<script src="../assets/underscore.js"></script>
+<script src="../assets/backbone.js"></script>
+<script src="../assets/backbone-localstorage.js"></script>
+<script src="../../thumbs.js"></script>
+<script src="todos.js"></script>
+
+<!-- Templates -->
+
+<script type="text/template" id="item-template">
+    <li data-thumbs-el data-thumbs-bind-class="done:done" data-thumbs-bind-event="destroy:remove">
+        <div class="view" data-thumbs-delegate="dblclick:edit">
+            <input class="toggle" type="checkbox" data-thumbs-bind="done" data-thumbs-delegate="click:toggleDone"/>
+            <label data-thumbs-bind="title"></label>
+            <a class="destroy" data-thumbs-delegate="click:clear"></a>
+        </div>
+        <input class="edit" data-thumbs-id="input" type="text" data-thumbs-bind="title"
+               data-thumbs-delegate="keypress:updateOnEnter blur:close"/>
+    </li>
+</script>
+
+</body>
+</html>
