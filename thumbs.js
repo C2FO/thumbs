@@ -11,6 +11,11 @@
     var thumbs;
     if (typeof exports !== 'undefined') {
         thumbs = exports;
+    } else if (typeof define === "function" && define.amd) {
+        define(function () {
+            thumbs = {};
+            return thumbs;
+        });
     } else {
         thumbs = root.thumbs = {};
     }
@@ -122,10 +127,25 @@
     };
 
     var Identifier = {
+        __identifiers: null,
+
+        initialize: function () {
+            this.__identifiers = [];
+            this._super('initialize', arguments);
+        },
+
         render: function render() {
             this._super('render', arguments);
             this.checkForIdentifiers();
             return this;
+        },
+
+        remove: function () {
+            _.each(this.__identifiers, function (id) {
+                this[id] = this['$' + id] = null;
+            }, this);
+            this.__identifiers = [];
+            return this._super('remove', arguments);
         },
 
         checkForIdentifiers: function checkForIdentifiers() {
@@ -135,6 +155,7 @@
                 var id = $this.data('thumbs-id');
                 self[id] = this;
                 self['$' + id] = $this;
+                self.__identifiers.push(id);
             });
             return this;
         }
@@ -412,8 +433,5 @@
             return this.renderTemplate()._super("render", arguments);
         }
     });
-
-    return View;
-
 
 }).call(this);
