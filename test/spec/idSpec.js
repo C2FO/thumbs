@@ -40,8 +40,10 @@ describe("thumbs.View identifier", function () {
         view.render();
         expect(view.__identifiers.length).toBeGreaterThan(0);
         expect(view.foo).toBeDefined();
+        expect(view.$foo).toBeDefined();
         view.remove();
         expect(view.__identifiers.length).toBe(0);
-        expect(view.foo).not.toBeDefined();
+        expect(view.foo).toBeNull();
+        expect(view.$foo).toBeNull();
     });
 });

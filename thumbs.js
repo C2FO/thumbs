@@ -142,8 +142,7 @@
 
         remove: function () {
             _.each(this.__identifiers, function (id) {
-                delete this[id],
-                delete this['$' + id];
+                this[id] = this['$' + id] = null;
             }, this);
             this.__identifiers = [];
             return this._super('remove', arguments);
