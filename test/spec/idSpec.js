@@ -34,4 +34,16 @@ describe("thumbs.View identifier", function () {
         view.render();
         expect(view.foo).toBeDefined();
     });
+
+    it("removes all references to DOM elements when the view is removed", function () {
+        var view = new View();
+        view.render();
+        expect(view.__identifiers.length).toBeGreaterThan(0);
+        expect(view.foo).toBeDefined();
+        expect(view.$foo).toBeDefined();
+        view.remove();
+        expect(view.__identifiers.length).toBe(0);
+        expect(view.foo).toBeNull();
+        expect(view.$foo).toBeNull();
+    });
 });
