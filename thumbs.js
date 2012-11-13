@@ -8,13 +8,7 @@
         return slice.call(args, 0);
     }
 
-    var thumbs;
-    if (typeof exports !== 'undefined') {
-        thumbs = exports;
-    } else {
-        thumbs = root.thumbs = {};
-    }
-
+    var thumbs = {};
 
     // Require Underscore, if we're on the server, and it's not already present.
     var _ = root._;
