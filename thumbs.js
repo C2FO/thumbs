@@ -319,7 +319,7 @@
                             l.apply(this, args);
                         }, this);
                     };
-                    model.on(event, eventListeners.fn, this)
+                    model.on(event, eventListeners.fn, this);
                 }, this);
             }
             return this;
@@ -329,10 +329,10 @@
             var model = this.model || this.collection;
             if (model) {
                 _.each(this.__monitors, function (modelListeners, event) {
-                    model.off("change:" + event, modelListeners.fn, this)
+                    model.off("change:" + event, modelListeners.fn, this);
                 });
                 _.each(this.__events, function (eventListeners, event) {
-                    model.off(event, eventListeners.fn, this)
+                    model.off(event, eventListeners.fn, this);
                 });
             }
             return this;
@@ -370,7 +370,7 @@
             data = (data !== null && "undefined" !== typeof data) ? data : "";
             var formatter = $el.data("thumbs-format");
             splitParts(formatter || "", function (formatterParts) {
-                if (formatterParts.length == 2) {
+                if (formatterParts.length === 2) {
                     type = formatterParts[0];
                     formatter = formatterParts[1];
                 } else {
@@ -443,7 +443,7 @@
     }());
 
     thumbs.Router = Router.extend({
-        route: function route(route, name, callback) {
+        route: function(route, name, callback) {
             this._super("route", arguments);
             !thumbs.history && (thumbs.history = Backbone.history);
             return this;
@@ -575,16 +575,17 @@
          * @return {Object} Object with key value pairs to be interpolated into the View.
          */
         getTemplateData: function () {
-            return this.model ? this.model.toJSON() : {};
+            return (this.model || this.collection) ? (this.model || this.collection)["toJSON"]() : {};
         },
 
         /**
          * Fills the template with the data gathered from {@link thumbs.TemplateView#getTemplateData}
          * @return {thumbs.TemplateView} this for chaining.
          */
-        fillTemplate: function fillTemplate() {
+        fillTemplate: function fillTemplate(data) {
+            data = data || this.getTemplateData();
             if (this._template) {
-                return this._template(this.getTemplateData());
+                return this._template(data);
             } else {
                 return null;
             }

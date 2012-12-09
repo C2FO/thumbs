@@ -16,7 +16,8 @@
         "_",
         "require",
         "define",
-        "sinon"
+        "sinon",
+        "thumbs"
     ],
 
     "node" : true,
