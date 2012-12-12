@@ -329,7 +329,7 @@
                                 }, this);
                             };
                             model.on("change:" + event, modelListeners.fn, this);
-                        });
+                        }, this);
                     }
                     if (events) {
                         _.each(this.__events, function (eventListeners, event) {
@@ -468,6 +468,67 @@
 
         };
 
+
+        var Subview = {
+            _subviews: null,
+
+            initialize: function initialize() {
+                this._super('initialize', arguments);
+                this.__subviews = [];
+            },
+
+            render: function render() {
+                this._super('render', arguments);
+                this.checkForSubviews();
+                return this;
+            },
+
+            remove: function remove() {
+                if (this._subviews.length) {
+                    _.each(this.__subviews, function (subview) {
+                        subview.remove();
+                    });
+                    this.__subviews.length = 0;
+                }
+                return this._super('remove', arguments);
+            },
+
+            _parseViewArgs: function (args) {
+                /*jshint evil:true*/
+                var ret = {};
+                if (args) {
+                    try {
+                        _.extend(ret, eval("with(this){({" + args + "})}"));
+                    } catch (e) {
+                        throw new Error("Unable to parse data-thumbs-args : " + args + " : " + e.toString());
+                    }
+                }
+                return ret;
+            },
+
+            renderSubviewView: function renderSubviewView(el) {
+                var SubView = null,
+                    $el = $(el),
+                    v = $el.data('thumbs-view');
+                if (v && (SubView = this[v])) {
+                    var args = this._parseViewArgs($el.data('thumbs-args'));
+                    _.extend(args, { el: el});
+                    this.__subviews.push(new SubView(args).render());
+                } else {
+                    throw new Error("Unable to find " + v + " on view");
+                }
+                return this;
+            },
+
+
+            checkForSubviews: function () {
+                var self = this;
+                this.$('[data-thumbs-view]').each(function () {
+                    self.renderSubviewView(this);
+                });
+            }
+        };
+
         //helper to set a shared templater. Defaults to _.template
         thumbs.templater = (function _templater() {
             //bring a private templater into scope
@@ -495,18 +556,8 @@
             }
         });
 
-    //override the router so we can set our history
-    thumbs.Router = Router.extend({
-        route: function route(route, name, callback) {
-            this._super("route", arguments);
-            //set thumbs.history for API uniformity
-            !thumbs.history && (thumbs.history = Backbone.history);
-            return this;
-        }
-    });
-
         //extend our view
-        View = thumbs.View = View.extend(ElFinder).extend(Formatter).extend(Identifier).extend(Binder).extend(EventDelegator).extend({
+        View = thumbs.View = View.extend(Subview).extend(ElFinder).extend(Formatter).extend(Identifier).extend(Binder).extend(EventDelegator).extend({
             _subviews: null,
 
             initialize: function initialize(options) {
@@ -587,35 +638,9 @@
         });
 
         thumbs.TemplateView = View.extend({
-            /**@lends thumbs.TemplateView.prototype*/
 
-            /**
-             * The the `templater` to use to compile this view template. If not specified them {@link thumbs.templater}
-             * will be used.
-             *
-             * @example
-             *
-             * var MyView = thumbs.TemplateView.extend({
-         *     templater : function(template){
-         *          return Handlebars.compile(template);
-         *     },
-         *
-         *     template : "<div>{{firstName}}</div>"
-         * })
-             *
-             * @function
-             */
             templater: null,
 
-            /**
-             * The template string for this view.
-             *
-             * @example
-             * var MyView = thumbs.TemplateView.extend({
-         *     template : "<div>{{firstName}}</div>"
-         * });
-             *
-             */
             template: null,
 
             initialize: function (options) {
@@ -628,29 +653,11 @@
                 }
             },
 
-            /**
-             * Gathers data to be interpolated into the template. By default serializes the model to json.
-             *
-             * @example
-             * var MyView = thumbs.TemplateView.extend({
-         *     template : "<div><div>{{i18n.hello}}<div> <div>{{firstName}}</div> </div>",
-         *     getTemplateData : function(){
-         *         var data = this._super("getTemplateData", arguments);
-         *         data.i18n = {hello : "Hello"};
-         *         return data;
-         *     }
-         * });
-         *
-         * @return {Object} Object with key value pairs to be interpolated into the View.
-         */
-        getTemplateData: function () {
-            return (this.model || this.collection) ? (this.model || this.collection)["toJSON"]() : {};
-        },
 
-            /**
-             * Fills the template with the data gathered from {@link thumbs.TemplateView#getTemplateData}
-             * @return {thumbs.TemplateView} this for chaining.
-             */
+            getTemplateData: function () {
+                return (this.model || this.collection) ? (this.model || this.collection)["toJSON"]() : {};
+            },
+
             fillTemplate: function fillTemplate(data) {
                 if (this._template) {
                     return this._template(data || this.getTemplateData());
