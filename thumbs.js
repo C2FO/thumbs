@@ -507,13 +507,17 @@
             },
 
             renderSubviewView: function renderSubviewView(el) {
-                var SubView = null,
+                var SubView = null, id,
                     $el = $(el),
                     v = $el.data('thumbs-view');
                 if (v && (SubView = this[v])) {
                     var args = this._parseViewArgs($el.data('thumbs-args'));
                     _.extend(args, { el: el});
-                    this.__subviews.push(new SubView(args).render());
+                    var view = new SubView(args);
+                    this.__subviews.push(view.render());
+                    if (!!(id = $el.data('thumbs-id'))) {
+                        this["$" + id] = view;
+                    }
                 } else {
                     throw new Error("Unable to find " + v + " on view");
                 }
@@ -557,7 +561,7 @@
         });
 
         //extend our view
-        View = thumbs.View = View.extend(Subview).extend(ElFinder).extend(Formatter).extend(Identifier).extend(Binder).extend(EventDelegator).extend({
+        View = thumbs.View = View.extend(ElFinder).extend(Formatter).extend(Identifier).extend(Binder).extend(EventDelegator).extend(Subview).extend({
             _subviews: null,
 
             initialize: function initialize(options) {
