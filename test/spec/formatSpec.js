@@ -61,8 +61,8 @@ describe("thumbs.View Formatter", function () {
             var model = new TestModel({firstName: null, lastName: undefined});
             var view = new TestView({ model: model });
             view.render();
-            expect(view.$('[data-thumbs-format="upperCase"]')).toBeEmpty();
-            expect(view.$('[data-thumbs-format="lowerCase"]')).toBeEmpty();
+            expect(view.$('[data-thumbs-format="upperCase"]')).toHaveText("");
+            expect(view.$('[data-thumbs-format="lowerCase"]')).toHaveText("");
         });
 
 
