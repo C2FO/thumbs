@@ -115,7 +115,7 @@
         }
 
         _.extend(Class.prototype, thumbs.Events, _super, {
-            initialize: function initialize() {
+            initialize: function () {
             }
         });
 
@@ -129,13 +129,13 @@
 
         var EventDelegator = {
 
-            render: function render() {
+            render: function () {
                 this._super('render', arguments);
                 this.checkForEvents();
                 return this;
             },
 
-            checkForEvents: function checkForEvents() {
+            checkForEvents: function () {
                 var self = this;
                 this.events = this.events || {};
                 this.$('[data-thumbs-delegate]').each(function () {
@@ -159,14 +159,14 @@
                 this._super('initialize', arguments);
             },
 
-            removeIdentifiers: function removeIdentifiers() {
+            removeIdentifiers: function () {
                 _.each(this.__identifiers, function (id) {
                     this[id] = this['$' + id] = null;
                 }, this);
                 this.__identifiers = [];
             },
 
-            checkForIdentifiers: function checkForIdentifiers() {
+            checkForIdentifiers: function () {
                 var self = this;
                 this.removeIdentifiers();
                 this.$('[data-thumbs-id]').each(function (el) {
@@ -179,7 +179,7 @@
                 return this;
             },
 
-            render: function render() {
+            render: function () {
                 this._super('render', arguments);
                 this.checkForIdentifiers();
                 return this;
@@ -197,7 +197,7 @@
 
             __events: null,
 
-            initialize: function initialize() {
+            initialize: function () {
                 this._super("initialize", arguments);
                 this.__monitors = {};
                 this.__events = {};
@@ -206,16 +206,16 @@
                     "setupBinders");
             },
 
-            __updateValues: function setValues() {
+            __updateValues: function () {
                 if (this.model && this.model instanceof Model) {
                     return this.__setValues(this.model.changedAttributes());
                 }
             },
 
-            __setValues: function __setValues(values) {
+            __setValues: function (values) {
                 var monitors = this.__monitors;
                 if (monitors) {
-                    _.each(values, function changedEach(val, key) {
+                    _.each(values, function (val, key) {
                         var mon = monitors[key];
                         if (mon) {
                             _.each(mon, function (fn) {
@@ -227,18 +227,18 @@
                 return this;
             },
 
-            setElData: function setElData(el, data, type, attribute) {
+            setElData: function (el, data, type, attribute) {
                 this.checkFormatting(el, data, type);
 
             },
 
-            setupType: function setupType(m, el, type) {
+            setupType: function (m, el, type) {
                 var monitors = this.__monitors;
                 if (!(m in monitors)) {
                     monitors[m] = [];
                 }
                 var setElData = this.setElData;
-                monitors[m].push(function monitor(data) {
+                monitors[m].push(function (data) {
                     if ("function" === typeof el) {
                         el(data, m);
                     } else {
@@ -247,7 +247,7 @@
                 });
             },
 
-            setupBind: function setupBind(el) {
+            setupBind: function (el) {
                 var $el = $(el), setupType = this.setupType;
                 splitParts($el.data("thumbs-bind"), function (mParts) {
                     if (mParts.length === 1) {
@@ -260,7 +260,7 @@
                 });
             },
 
-            setupClassBind: function setupClassBind(el) {
+            setupClassBind: function (el) {
                 var $el = $(el), setupType = this.setupType;
                 splitParts($el.data("thumbs-bind-class"), function (mParts) {
                     if (mParts.length === 2) {
@@ -274,7 +274,7 @@
                 });
             },
 
-            setupEventBind: function setupEventBind(el) {
+            setupEventBind: function (el) {
                 var events = this.__events;
                 var $el = $(el), view = this;
                 splitParts($el.data("thumbs-bind-event"), function (mParts) {
@@ -291,7 +291,7 @@
             },
 
 
-            findThumbsBind: function _findThumbsBind() {
+            findThumbsBind: function () {
                 var setupBind = this.setupBind,
                     setupClassBind = this.setupClassBind,
                     setupEventBind = this.setupEventBind;
@@ -317,13 +317,13 @@
                 return this;
             },
 
-            turnOnModelListeners: function turnOnModelListeners() {
+            turnOnModelListeners: function () {
                 var model = this.model || this.collection;
                 if (model) {
                     var monitors = this.__monitors, events = this.__events;
                     if (monitors) {
                         _.each(this.__monitors, function (modelListeners, event) {
-                            modelListeners.fn = function eventListenersFn(model, val) {
+                            modelListeners.fn = function (model, val) {
                                 _.each(modelListeners, function (l) {
                                     l.apply(this, [val]);
                                 }, this);
@@ -333,7 +333,7 @@
                     }
                     if (events) {
                         _.each(this.__events, function (eventListeners, event) {
-                            eventListeners.fn = function eventListenersFn() {
+                            eventListeners.fn = function () {
                                 var args = arguments;
                                 _.each(eventListeners, function (l) {
                                     l.apply(this, args);
@@ -346,7 +346,7 @@
                 return this;
             },
 
-            turnOffModelListeners: function turnOnModelListeners() {
+            turnOffModelListeners: function () {
                 var model = this.model || this.collection;
                 if (model) {
                     var monitors = this.__monitors, events = this.__events;
@@ -367,7 +367,7 @@
             },
 
 
-            setupBinders: function setUpMonitors() {
+            setupBinders: function () {
                 var model = this.model || this.collection;
                 //turn off previous model listeners incase render is called more than once
                 this.turnOffModelListeners()
@@ -381,14 +381,14 @@
                 return this;
             },
 
-            render: function render() {
+            render: function () {
                 this._super("render", arguments);
                 //setup out binders
                 this.setupBinders();
                 return this;
             },
 
-            remove: function remove() {
+            remove: function () {
                 this.turnOffModelListeners();
                 this.__monitors = this.__events = null;
                 return this._super("remove", arguments);
@@ -398,7 +398,7 @@
 
         var Formatter = {
 
-            checkFormatting: function checkFormatting(el, data, type) {
+            checkFormatting: function (el, data, type) {
                 //create the jquery object and pull the ars
                 var $el = this.$(el), args = argsToArray(arguments);
                 //if we get more than one arg then data was passed in
@@ -426,7 +426,7 @@
                 setElData($el, data, type);
             },
 
-            renderFormatters: function renderFormatters() {
+            renderFormatters: function () {
                 var checkFormatting = _.bind(this.checkFormatting, this);
                 //find all formatters and check the current formatting
                 this.$("[data-thumbs-format]").each(function () {
@@ -435,7 +435,7 @@
                 return this;
             },
 
-            render: function render() {
+            render: function () {
                 this._super("render", arguments);
                 //get our formatters and render them
                 return this.renderFormatters();
@@ -472,18 +472,18 @@
         var Subview = {
             _subviews: null,
 
-            initialize: function initialize() {
+            initialize: function () {
                 this._super('initialize', arguments);
                 this.__subviews = [];
             },
 
-            render: function render() {
+            render: function () {
                 this._super('render', arguments);
                 this.checkForSubviews();
                 return this;
             },
 
-            remove: function remove() {
+            remove: function () {
                 if (this._subviews.length) {
                     _.each(this.__subviews, function (subview) {
                         subview.remove();
@@ -506,7 +506,7 @@
                 return ret;
             },
 
-            renderSubviewView: function renderSubviewView(el) {
+            renderSubviewView: function (el) {
                 var SubView = null, id,
                     $el = $(el),
                     v = $el.data('thumbs-view');
@@ -534,7 +534,7 @@
         };
 
         //helper to set a shared templater. Defaults to _.template
-        thumbs.templater = (function _templater() {
+        thumbs.templater = (function () {
             //bring a private templater into scope
             var templater = _.template;
             return function __templater(tmplr) {
@@ -550,7 +550,7 @@
 
         //override the router so we can set our history
         thumbs.Router = Router.extend({
-            route: function _route(route, name, callback) {
+            route: function (route, name, callback) {
                 this._super("route", arguments);
                 //set thumbs.history for API uniformity
                 if (!thumbs.history) {
@@ -564,13 +564,13 @@
         View = thumbs.View = View.extend(ElFinder).extend(Formatter).extend(Identifier).extend(Binder).extend(EventDelegator).extend(Subview).extend({
             _subviews: null,
 
-            initialize: function initialize(options) {
+            initialize: function (options) {
                 this._super("initialize", arguments);
                 this._subviews = {};
             },
 
             //call to add a subview at the given selector
-            addSubView: function addSubView(selector, view) {
+            addSubView: function (selector, view) {
                 if (view) {
                     //remove any previous subviews at the selector
                     this.removeSubView(selector);
@@ -583,7 +583,7 @@
             },
 
             //remove a subview at the given selector
-            removeSubView: function removeSubView(selector) {
+            removeSubView: function (selector) {
                 //pull it offour __subviews hash
                 var view = this._subviews[selector];
                 if (view) {
@@ -602,7 +602,7 @@
             },
 
             //remove all registered subviews
-            removeSubViews: function removeSubViews() {
+            removeSubViews: function () {
                 //go through each and remove it
                 _.each(this._subviews, function (view, selector) {
                     this.removeSubView(selector);
@@ -610,13 +610,13 @@
                 return this;
             },
 
-            render: function render() {
+            render: function () {
                 this._super("render", arguments);
                 //assign all our subviews
                 return this.assign(this._subviews);
             },
 
-            assign: function assign(selector, view) {
+            assign: function (selector, view) {
                 var selectors;
                 if (_.isObject(selector)) {
                     selectors = selector;
@@ -634,7 +634,7 @@
             },
 
             // when a view is removed, remove all event bindings
-            remove: function remove() {
+            remove: function () {
                 this.undelegateEvents();
                 this.removeSubViews();
                 return this._super('remove', arguments);
@@ -662,7 +662,7 @@
                 return (this.model || this.collection) ? (this.model || this.collection)["toJSON"]() : {};
             },
 
-            fillTemplate: function fillTemplate(data) {
+            fillTemplate: function (data) {
                 if (this._template) {
                     return this._template(data || this.getTemplateData());
                 } else {
@@ -675,7 +675,7 @@
              *
              * @return this
              */
-            renderTemplate: function renderTemplate() {
+            renderTemplate: function () {
                 if (this._template) {
                     var template = this.fillTemplate();
                     if (template) {

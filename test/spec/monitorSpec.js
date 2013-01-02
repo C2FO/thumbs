@@ -59,14 +59,14 @@ describe("thumbs.View Monitor", function () {
             this.view.render();
             this.model.set("lastName", null);
             expect(this.view.$('[data-thumbs-bind="firstName"]')).toHaveText("Bob");
-            expect(this.view.$('[data-thumbs-bind="lastName"]')).toBeEmpty();
+            expect(this.view.$('[data-thumbs-bind="lastName"]')).toHaveText("");
         });
 
         it("should set to empty string if undefined", function () {
             this.view.render();
             this.model.set("lastName", undefined);
             expect(this.view.$('[data-thumbs-bind="firstName"]')).toHaveText("Bob");
-            expect(this.view.$('[data-thumbs-bind="lastName"]')).toBeEmpty();
+            expect(this.view.$('[data-thumbs-bind="lastName"]')).toHaveText("");
         });
 
         it("should reset if set back to a defined value", function () {
