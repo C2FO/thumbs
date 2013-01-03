@@ -1,5 +1,6 @@
 (function () {
     /*jshint strict:false*/
+    /*globals Backbone*/
 
     function defineThumbs(Backbone, _) {
 
@@ -390,7 +391,8 @@
 
             remove: function () {
                 this.turnOffModelListeners();
-                this.__monitors = this.__events = null;
+                this.__monitors = {};
+                this.__events = {};
                 return this._super("remove", arguments);
             }
 
