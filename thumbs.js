@@ -66,6 +66,91 @@
             }
         }
 
+
+        var viewRegistry = thumbs.viewRegistry = (function () {
+            var _hash = {},
+                _length = 0;
+
+            function __getById(id) {
+                return "string" === typeof id ? _hash[id] : id;
+            }
+
+            function _getByNode(node) {
+                return node ? _hash[node.thumbsId || node.getAttribute("thumbs-id")] : undefined;
+            }
+
+            function _toArray() {
+                return _.values(_hash);
+            }
+
+
+            function _getUniqueId() {
+                return _.uniqueId("thumbs_view_");
+            }
+
+            function _getViews(node) {
+                var ret = [];
+
+                function gatherViews(root) {
+                    var thumbsId, node, view;
+                    for (node = root.firstChild; node; node = node.nextSibling) {
+                        if (node.nodeType === 1) {
+                            if ((thumbsId = node.getAttribute("thumbs-id")) && (view = _hash[thumbsId])) {
+                                ret.push(view);
+                            }
+                        }
+                    }
+                }
+
+                gatherViews(node);
+                return ret;
+            }
+
+            function __addView(view) {
+                var id = view.thumbsId;
+                if (_hash.hasOwnProperty(id)) {
+                    throw new Error("Tried to register view with id " + id + " but that id is already registered");
+                }
+                if (id) {
+                    _hash[id] = view;
+                    _length++;
+                }
+            }
+
+            function __removeView(id) {
+                if (_hash.hasOwnProperty(id)) {
+                    delete _hash[id];
+                    _length--;
+                }
+            }
+
+            function _getEnclosingView(node) {
+                var id;
+                while (node) {
+                    if ((id = node.nodeType === 1 && node.getAttribute("widgetId"))) {
+                        return _hash[id];
+                    }
+                    node = node.parentNode;
+                }
+                return null;
+            }
+
+            return {
+                _hash: _hash,
+                getEnclosingView: _getEnclosingView,
+                remove: __removeView,
+                add: __addView,
+                "get": __getById,
+                uniqueId: _getUniqueId,
+                getSubViews: _getViews,
+                getByNode: _getByNode,
+                toArray: _toArray
+            };
+        }());
+
+        thumbs.viewById = viewRegistry.get;
+        thumbs.viewByNode = viewRegistry.getByNode;
+
         var _super = {
             _super: (function _super() {
 
@@ -567,8 +652,23 @@
             _subviews: null,
 
             initialize: function (options) {
+                this.thumbsId = viewRegistry.uniqueId();
+                viewRegistry.add(this);
                 this._super("initialize", arguments);
                 this._subviews = {};
+                if (this.$el) {
+                    this.$el.attr("thumbs-id", this.thumbsId);
+                }
+            },
+
+            setElement: function () {
+                var ret = this._super("setElement", arguments);
+                if (this.el) {
+                    this.$el.attr("thumbs-id", this.thumbsId);
+                } else {
+                    viewRegistry.remove(this.thumbsId);
+                }
+                return this;
             },
 
             //call to add a subview at the given selector
@@ -637,11 +737,11 @@
 
             // when a view is removed, remove all event bindings
             remove: function () {
-                this.undelegateEvents();
                 this.removeSubViews();
-                return this._super('remove', arguments);
+                return  this._super('remove', arguments);
             }
         });
+
 
         thumbs.TemplateView = View.extend({
 
@@ -689,7 +789,8 @@
 
             render: function () {
                 //call render template
-                return this.renderTemplate()._super("render", arguments);
+                this.renderTemplate()._super("render", arguments);
+
             }
         });
         return thumbs;
