@@ -51,6 +51,11 @@ describe("thumbs.View", function () {
                 view = new TestMainView(),
                     subview = new TestSubView();
             });
+
+            it("should add itself to the thumbs registry", function () {
+                expect(thumbs.viewById(view.thumbsId)).toEqual(view);
+            });
+
             it("should be able to render a subview to a given selector in an unrendered view", function () {
                 view.addSubView('#test', subview);
                 view.render();
@@ -86,6 +91,12 @@ describe("thumbs.View", function () {
             this.view.render();
             this.view.remove();
             expect(spy).toHaveBeenCalled();
+        });
+
+        it("should remove itself from the thumbs registry if the element is removed", function () {
+            this.view.remove();
+            this.view.setElement(null);
+            expect(thumbs.viewById(this.view.thumbsId)).toBeUndefined();
         });
     });
 });
