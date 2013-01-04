@@ -1,6 +1,6 @@
 (function () {
     /*jshint strict:false*/
-    /*globals Backbone*/
+    /*globals Backbone, _*/
 
     function defineThumbs(Backbone, _) {
 
@@ -41,17 +41,27 @@
 
         //private helper to set the data of an element
         function setElData($el, data, type) {
+            var thumbsId;
+            if ((thumbsId = $el.attr("thumbs-id"))) {
+                $el = viewRegistry.get(thumbsId) || $el;
+            }
             if (type) {
                 //if we have a type then we can try to look up the type function on the element
                 if ("function" === typeof $el[type]) {
                     $el[type](data);
                 } else {
                     //otherwise set it as an attribute
-                    $el.attr(type, data);
+                    if ($el.attr) {
+                        $el.attr(type, data);
+                    } else if ($el instanceof View) {
+                        $el[type] = data;
+                    } else {
+                        throw new Error("unable to determine how to set data on " + $el);
+                    }
                 }
             } else {
                 //otherwise try to infer the type
-                if ($el.is("input")) {
+                if ($el.is && $el.is("input")) {
                     //if we are a checkbox or radio then go ahead an assumed checked
                     if ($el.is("[type=checkbox], [type=radio]")) {
                         $el.attr("checked", data);
@@ -59,9 +69,13 @@
                         //otherwise set the value of the input element
                         $el.val(data);
                     }
-                } else {
+                }else if($el instanceof View && $el.val){
+                    $el.val(data);
+                } else if ($el.text) {
                     //if we are not an input assume it is text
                     $el.text(data);
+                } else {
+                    throw new Error("unable to determine how to set data on " + $el);
                 }
             }
         }
@@ -565,8 +579,8 @@
             },
 
             render: function () {
-                this._super('render', arguments);
                 this.checkForSubviews();
+                this._super('render', arguments);
                 return this;
             },
 
