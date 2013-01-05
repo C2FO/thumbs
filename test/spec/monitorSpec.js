@@ -116,6 +116,196 @@ describe("thumbs.View Monitor", function () {
 
     });
 
+    describe("data-thumbs-bind with a subview", function () {
+
+        describe("subview with a val function", function () {
+
+            var FormView = View.extend({
+
+                val: function (val) {
+                    this.$el.attr("checked", val);
+                    this.value = val;
+                    return this;
+                }
+
+            });
+
+            var TestView = View.extend({
+                template: '<p><input data-thumbs-view="FormView" type="radio" data-thumbs-bind="isChecked"/></p>',
+                FormView: FormView
+            });
+
+
+            var TestModel = thumbs.Model.extend({});
+
+            beforeEach(function () {
+                this.model = new TestModel({isChecked: true, lastName: "Yukon"});
+                this.view = new TestView({ model: this.model });
+            });
+
+            it("should set initial values", function () {
+                this.view.render();
+                expect(this.view.$('[data-thumbs-bind="isChecked"]')).toBeChecked();
+            });
+
+            it("should update values", function () {
+                this.view.render();
+                this.model.set({isChecked: false, lastName: "YUKON"});
+                expect(this.view.$('[data-thumbs-bind="isChecked"]')).toNotBeChecked();
+            });
+
+            it("should update values", function () {
+                this.view.render();
+                this.model.set({isChecked: false, lastName: null});
+                expect(this.view.$('[data-thumbs-bind="isChecked"]')).toNotBeChecked();
+            });
+
+        });
+
+        describe("subview with a text function", function () {
+            var TextView = View.extend({
+
+                text: function (val) {
+                    this.$el.text(val);
+                    return this;
+                }
+
+            });
+
+            var TestView = View.extend({
+                template: '<p><div data-thumbs-view="TextView" data-thumbs-bind="lastName"></div></p>',
+                TextView: TextView
+            });
+
+
+            var TestModel = thumbs.Model.extend({});
+
+            beforeEach(function () {
+                this.model = new TestModel({isChecked: true, lastName: "Yukon"});
+                this.view = new TestView({ model: this.model });
+            });
+
+            it("should set initial values", function () {
+                this.view.render();
+                expect(this.view.$('[data-thumbs-bind="lastName"]')).toHaveText("Yukon");
+            });
+
+            it("should update values", function () {
+                this.view.render();
+                this.model.set({isChecked: false, lastName: "YUKON"});
+                expect(this.view.$('[data-thumbs-bind="lastName"]')).toHaveText("YUKON");
+            });
+
+            it("should update values", function () {
+                this.view.render();
+                this.model.set({isChecked: false, lastName: null});
+                expect(this.view.$('[data-thumbs-bind="lastName"]')).toHaveText("");
+            });
+        });
+
+        describe("subview with a function that matches a value", function () {
+            var SubView = View.extend({
+
+                lastName: function (val) {
+                    this.$el.text(val);
+                    return this;
+                }
+
+            });
+
+            var TestView = View.extend({
+                template: '<p><div data-thumbs-view="SubView" data-thumbs-bind="lastName:lastName"></div></p>',
+                SubView: SubView
+            });
+
+
+            var TestModel = thumbs.Model.extend({});
+
+            beforeEach(function () {
+                this.model = new TestModel({isChecked: true, lastName: "Yukon"});
+                this.view = new TestView({ model: this.model });
+            });
+
+            it("should set initial values", function () {
+                this.view.render();
+                expect(this.view.$('[data-thumbs-bind="lastName:lastName"]')).toHaveText("Yukon");
+            });
+
+            it("should update values", function () {
+                this.view.render();
+                this.model.set({isChecked: false, lastName: "YUKON"});
+                expect(this.view.$('[data-thumbs-bind="lastName:lastName"]')).toHaveText("YUKON");
+            });
+
+            it("should update values", function () {
+                this.view.render();
+                this.model.set({isChecked: false, lastName: null});
+                expect(this.view.$('[data-thumbs-bind="lastName:lastName"]')).toHaveText("");
+            });
+        });
+
+        describe("subview without a function that matches a value", function () {
+            var SubView = View.extend({});
+
+            var TestView = View.extend({
+                template: '<p><div data-thumbs-view="SubView" data-thumbs-bind="lastName:lastName"></div></p>',
+                SubView: SubView
+            });
+
+
+            var TestModel = thumbs.Model.extend({});
+
+            beforeEach(function () {
+                this.model = new TestModel({isChecked: true, lastName: "Yukon"});
+                this.view = new TestView({ model: this.model });
+            });
+
+            it("should set initial values", function () {
+                this.view.render();
+                expect(thumbs.viewByNode(this.view.$('[data-thumbs-bind="lastName:lastName"]').get(0)).lastName).toEqual("Yukon");
+            });
+
+            it("should update values", function () {
+                this.view.render();
+                this.model.set({isChecked: false, lastName: "YUKON"});
+                expect(thumbs.viewByNode(this.view.$('[data-thumbs-bind="lastName:lastName"]').get(0)).lastName).toEqual("YUKON");
+            });
+
+            it("should update values", function () {
+                this.view.render();
+                this.model.set({isChecked: false, lastName: null});
+                expect(thumbs.viewByNode(this.view.$('[data-thumbs-bind="lastName:lastName"]').get(0)).lastName).toEqual("");
+            });
+        });
+
+        describe("subview with out a type specifier, val, or text function", function () {
+            var SubView = View.extend({});
+
+            var TestView = View.extend({
+                template: '<p><div data-thumbs-view="SubView" data-thumbs-bind="lastName"></div></p>',
+                SubView: SubView
+            });
+
+
+            var TestModel = thumbs.Model.extend({});
+
+            beforeEach(function () {
+                this.model = new TestModel({isChecked: true, lastName: "Yukon"});
+                this.view = new TestView({ model: this.model });
+            });
+
+            it("should throw an error", function () {
+                var view = this.view;
+                expect(function () {
+                    view.render();
+                }).toThrow();
+            });
+
+        });
+
+    });
+
+
     describe("should set monitor properties based on data-thumbs-bind with specified values", function () {
 
         var TestView = View.extend({
