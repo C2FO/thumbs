@@ -808,7 +808,7 @@
 
             render: function () {
                 //call render template
-                this.renderTemplate()._super("render", arguments);
+                return this.renderTemplate()._super("render", arguments);
 
             }
         });
