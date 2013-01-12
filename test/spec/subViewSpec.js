@@ -69,9 +69,19 @@ describe("thumbs.View subview", function () {
         expect(view.$('#last-name').text()).toBe(view.model.get("lastName"));
     });
 
+    it("add custom event to view", function () {
+        expect(view._listeners).not.toBeDefined();
+        view.render(customEventTmpl);
+        expect(view._listeners).toBeDefined();
+        expect(_.values(view._listeners).length).toBe(1);
+        view.remove();
+        expect(_.values(view._listeners).length).toBe(0);
+    });
+
     it("should call custom events", function () {
         view.render(customEventTmpl);
         view.$subView.trigger("customEvent");
         expect(spy).toHaveBeenCalledOnce();
     });
+
 });
