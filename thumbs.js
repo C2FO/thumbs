@@ -69,7 +69,7 @@
                         //otherwise set the value of the input element
                         $el.val(data);
                     }
-                }else if($el instanceof View && $el.val){
+                } else if ($el instanceof View && $el.val) {
                     $el.val(data);
                 } else if ($el.text) {
                     //if we are not an input assume it is text
@@ -138,10 +138,10 @@
                 }
             }
 
-            function _getEnclosingView(node) {
-                var id;
+            function _getEnclosingView(searchNode) {
+                var id, node = searchNode;
                 while (node) {
-                    if ((id = node.nodeType === 1 && node.getAttribute("widgetId"))) {
+                    if (node !== searchNode && (id = node.nodeType === 1 && node.getAttribute("thumbs-id"))) {
                         return _hash[id];
                     }
                     node = node.parentNode;
@@ -239,12 +239,19 @@
                 var self = this;
                 this.events = this.events || {};
                 this.$('[data-thumbs-delegate]').each(function () {
-                    var $this = $(this), id = _.uniqueId('thumbs_');
-                    $this.addClass(id);
-                    splitParts($this.data('thumbs-delegate'), function (data) {
-                        var event = data[0], func = data[1];
-                        self.events[event + ' .' + id] = func;
-                    });
+                    var thumbsView = viewRegistry.get($(this).attr("thumbs-id"));
+                    if (viewRegistry.getEnclosingView(this) === self) {
+                        var $this = $(this),  id = _.uniqueId('thumbs_');
+                        $this.addClass(id);
+                        splitParts($this.data('thumbs-delegate'), function (data) {
+                            var event = data[0], func = data[1];
+                            self.events[event + ' .' + id] = func;
+                            if (thumbsView){
+                                //Listen to event if this is a thumbs-view
+                                self.listenTo(thumbsView, event, self[func]);
+                            }
+                        });
+                    }
                 });
                 this.delegateEvents();
                 return this;
@@ -270,11 +277,13 @@
                 var self = this;
                 this.removeIdentifiers();
                 this.$('[data-thumbs-id]').each(function (el) {
-                    var $this = $(this);
-                    var id = $this.data('thumbs-id');
-                    self[id] = this;
-                    self['$' + id] = $this;
-                    self.__identifiers.push(id);
+                    if (viewRegistry.getEnclosingView(this) === self) {
+                        var $this = $(this);
+                        var id = $this.data('thumbs-id');
+                        self[id] = this;
+                        self['$' + id] = viewRegistry.getByNode(this) || $this;
+                        self.__identifiers.push(id);
+                    }
                 });
                 return this;
             },
@@ -752,6 +761,7 @@
             // when a view is removed, remove all event bindings
             remove: function () {
                 this.removeSubViews();
+                this.stopListening();
                 return  this._super('remove', arguments);
             }
         });
