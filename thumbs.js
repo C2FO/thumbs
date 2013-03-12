@@ -246,7 +246,7 @@
                         splitParts($this.data('thumbs-delegate'), function (data) {
                             var event = data[0], func = data[1];
                             self.events[event + ' .' + id] = func;
-                            if (thumbsView){
+                            if (thumbsView) {
                                 //Listen to event if this is a thumbs-view
                                 self.listenTo(thumbsView, event, self[func]);
                             }
@@ -357,46 +357,52 @@
             },
 
             setupBind: function (el) {
-                var $el = $(el), setupType = this.setupType;
-                splitParts($el.data("thumbs-bind"), function (mParts) {
-                    if (mParts.length === 1) {
-                        setupType(mParts[0], el);
-                    } else if (mParts.length === 2) {
-                        setupType(mParts[1], el, mParts[0]);
-                    } else {
-                        throw new TypeError("Invalid data-thumbs-bind definition");
-                    }
-                });
+                if (viewRegistry.getEnclosingView(el) === this) {
+                    var $el = $(el), setupType = this.setupType;
+                    splitParts($el.data("thumbs-bind"), function (mParts) {
+                        if (mParts.length === 1) {
+                            setupType(mParts[0], el);
+                        } else if (mParts.length === 2) {
+                            setupType(mParts[1], el, mParts[0]);
+                        } else {
+                            throw new TypeError("Invalid data-thumbs-bind definition");
+                        }
+                    });
+                }
             },
 
             setupClassBind: function (el) {
-                var $el = $(el), setupType = this.setupType;
-                splitParts($el.data("thumbs-bind-class"), function (mParts) {
-                    if (mParts.length === 2) {
-                        var clazz = mParts[0];
-                        setupType(mParts[1], function (data) {
-                            $el.toggleClass(clazz, data);
-                        });
-                    } else {
-                        throw new TypeError("Invalid data-thumbs-bind-class definition");
-                    }
-                });
+                if (viewRegistry.getEnclosingView(el) === this) {
+                    var $el = $(el), setupType = this.setupType;
+                    splitParts($el.data("thumbs-bind-class"), function (mParts) {
+                        if (mParts.length === 2) {
+                            var clazz = mParts[0];
+                            setupType(mParts[1], function (data) {
+                                $el.toggleClass(clazz, data);
+                            });
+                        } else {
+                            throw new TypeError("Invalid data-thumbs-bind-class definition");
+                        }
+                    });
+                }
             },
 
             setupEventBind: function (el) {
-                var events = this.__events;
-                var $el = $(el), view = this;
-                splitParts($el.data("thumbs-bind-event"), function (mParts) {
-                    if (mParts.length === 2) {
-                        var event = mParts[0], eventListeners = events[event];
-                        if (!eventListeners) {
-                            eventListeners = events[event] = [];
+                if (viewRegistry.getEnclosingView(el) === this) {
+                    var events = this.__events;
+                    var $el = $(el), view = this;
+                    splitParts($el.data("thumbs-bind-event"), function (mParts) {
+                        if (mParts.length === 2) {
+                            var event = mParts[0], eventListeners = events[event];
+                            if (!eventListeners) {
+                                eventListeners = events[event] = [];
+                            }
+                            eventListeners.push(view[mParts[1]]);
+                        } else {
+                            throw new TypeError("Invalid data-thumbs-bind-class definition");
                         }
-                        eventListeners.push(view[mParts[1]]);
-                    } else {
-                        throw new TypeError("Invalid data-thumbs-bind-class definition");
-                    }
-                });
+                    });
+                }
             },
 
 
