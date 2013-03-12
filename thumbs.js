@@ -239,13 +239,17 @@
                 var self = this;
                 this.events = this.events || {};
                 this.$('[data-thumbs-delegate]').each(function () {
-                    var thumbsView;
+                    var thumbsView = viewRegistry.get($(this).attr("thumbs-id"));
                     if (viewRegistry.getEnclosingView(this) === self) {
                         var $this = $(this), id = _.uniqueId('thumbs_');
                         $this.addClass(id);
                         splitParts($this.data('thumbs-delegate'), function (data) {
                             var event = data[0], func = data[1];
                             self.events[event + ' .' + id] = func;
+                            if (thumbsView){
+                                //Listen to event if this is a thumbs-view
+                                self.listenTo(thumbsView, event, self[func]);
+                            }
                         });
                     }
                 });
@@ -757,6 +761,7 @@
             // when a view is removed, remove all event bindings
             remove: function () {
                 this.removeSubViews();
+                this.stopListening();
                 return  this._super('remove', arguments);
             }
         });

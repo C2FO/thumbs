@@ -1,8 +1,10 @@
 describe("thumbs.View subview", function () {
-    var subTmpl = '<div id="test"><input id="test-input" value="" type="text"/><div id="first-name"></div><div id="last-name"></div></div>',
+    var spy = sinon.spy(),
+        subTmpl = '<div id="test"><input id="test-input" value="" type="text"/><div id="first-name"></div><div id="last-name"></div></div>',
         viewTmpl = '<div id="test"><div data-thumbs-view="SubView"></div></div>',
         argsTmpl = '<div id="test"><div data-thumbs-view="SubView" data-thumbs-args="value : 1"></div></div>',
         instanceTmpl = '<div id="test"><div data-thumbs-view="SubView" data-thumbs-args="value: 1, model: model"></div></div>',
+        customEventTmpl = '<div id="test"><div data-thumbs-view="SubView" data-thumbs-args="value: 1, model: model" data-thumbs-delegate="customEvent:test", data-thumbs-id="subView"></div></div>',
         view = null,
         requireMock = null;
 
@@ -32,7 +34,8 @@ describe("thumbs.View subview", function () {
             this.$el.html(tmpl);
             this._super('render', arguments);
             return this;
-        }
+        },
+        test:spy
     });
 
     beforeEach(function () {
@@ -65,4 +68,20 @@ describe("thumbs.View subview", function () {
         expect(view.$('#first-name').text()).toBe(view.model.get("firstName"));
         expect(view.$('#last-name').text()).toBe(view.model.get("lastName"));
     });
+
+    it("add custom event to view", function () {
+        expect(view._listeners).not.toBeDefined();
+        view.render(customEventTmpl);
+        expect(view._listeners).toBeDefined();
+        expect(_.values(view._listeners).length).toBe(1);
+        view.remove();
+        expect(_.values(view._listeners).length).toBe(0);
+    });
+
+    it("should call custom events", function () {
+        view.render(customEventTmpl);
+        view.$subView.trigger("customEvent");
+        expect(spy).toHaveBeenCalledOnce();
+    });
+
 });
