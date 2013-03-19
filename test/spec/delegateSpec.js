@@ -61,11 +61,12 @@ describe("thumbs.View event", function () {
         });
 
         it("allows events to be set directly on an element", function () {
-            view.render();
+            view.render().$el.appendTo('body');
             view.$('button').trigger('click');
             expect(spy).toHaveBeenCalledOnce();
             view.$('button').trigger('focus');
             expect(spy).toHaveBeenCalledTwice();
+            view.$el.remove();
         });
     });
 });
