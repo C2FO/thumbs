@@ -656,7 +656,8 @@
             return function __templater(tmplr) {
                 if (tmplr) {
                     //if a templater was passed in then set it
-                    return (templater = tmplr);
+                    templater = tmplr;
+                    return templater;
                 } else {
                     //otherwise just get the templater
                     return templater;

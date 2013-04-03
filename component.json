@@ -1,0 +1,22 @@
+{
+  "name": "thumbs",
+  "version": "0.0.2",
+  "main": "thumbs.js",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "components",
+    "test"
+  ],
+  "dependencies": {
+    "backbone": "~0.9.10",
+    "underscore": "~1.4.4",
+    "jquery": "~1.9.1"
+  },
+  "devDependencies": {
+    "sinon": "http://sinonjs.org/releases/sinon-1.5.2.js",
+    "jasmine": "~1.3.1",
+    "jasmine-jquery": "~1.4.2",
+    "jasmine-sinon": "git@github.com:froots/jasmine-sinon.git#~0.1.0"
+  }
+}
