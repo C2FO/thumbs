@@ -2,6 +2,7 @@
   "name": "thumbs",
   "version": "0.0.2",
   "main": "thumbs.js",
+  "author": "Pollenware",
   "ignore": [
     "**/.*",
     "node_modules",
