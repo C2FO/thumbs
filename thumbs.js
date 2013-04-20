@@ -670,8 +670,8 @@
         thumbs.Router = Router.extend({
             preRoutes: null,
 
-            _bindRoutes: function() {
-                if (this.preBind && _.isFunction(this.preBind)){
+            _bindRoutes: function () {
+                if (this.preBind && _.isFunction(this.preBind)) {
                     this.preBind();
                 }
                 this._super("_bindRoutes", arguments);
@@ -705,13 +705,27 @@
                         callback = this.preRoutes[path];
                     } else if (_.isString(this.preRoutes[path])) {
                         callback = this[this.preRoutes[path]];
+                    } else if (_.isArray(this.preRoutes[path])) {
+                        var checks = this.preRoutes[path];
+                        callback = _.bind(function () {
+                            var result = true;
+                            for(var i=0; i<checks.length; i++){
+                                result = checks[i].apply(this);
+                                if (!result){
+                                    break;
+                                }
+                            }
+                            return result;
+                        }, this);
                     } else {
                         throw("Pre-Route must be a string or a function.");
                     }
+
                     if (!_.isRegExp(preRoute)) {
                         preRoute = this._routeToRegExp(preRoute);
                     }
                     thumbs.history.route(preRoute, _.bind(function () {
+
                         return callback.apply(this);
                     }, this));
                 }
