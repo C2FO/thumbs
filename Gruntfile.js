@@ -39,6 +39,8 @@ module.exports = function (grunt) {
             thumbs: {
                 src: [
                     'src/thumbs.core.js',
+                    'src/thumbs.super.js',
+                    'src/thumbs.class.js',
                     'src/thumbs.helpers.js',
                     'src/thumbs.model.js',
                     'src/thumbs.collection.js',
@@ -59,18 +61,42 @@ module.exports = function (grunt) {
                 }
             }
         },
+
+        preprocess: {
+            options: {
+                inline: true
+            },
+            build: {
+                files: {
+                    'thumbs.js': 'src/thumbs.core.js'
+                }
+            }
+        },
+
         concat: {
             dist: {
                 src: ['<banner:meta.banner>', '<%= pkg.name %>.js>'],
                 dest: 'dist/<%= pkg.name %>.js'
             }
         },
+
         uglify: {
             dist: {
                 src: ['<banner:meta.banner>', 'thumbs.js'],
                 dest: '<%= pkg.name %>.min.js'
             }
         },
+
+        connect: {
+            server: {
+                options: {
+                    port: 8888,
+                    base: '.',
+                    hostname: '*'
+                }
+            }
+        },
+
         watch: {
             old: {
                 files: 'thumbs.js',
@@ -86,10 +112,13 @@ module.exports = function (grunt) {
     // Default task.
     grunt.registerTask('default', ['jshint', 'concat', 'uglify']);
     grunt.registerTask('test', ['jshint', 'jasmine:thumbs']);
+    grunt.registerTask('server', ['connect:server:keepalive']);
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-jasmine');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-connect');
+    grunt.loadNpmTasks('grunt-preprocess');
 
 };

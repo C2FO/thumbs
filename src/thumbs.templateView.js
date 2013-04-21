@@ -1,21 +1,29 @@
 Thumbs.TemplateView = (function (Thumbs) {
 
+    //helper to set a shared templater. Defaults to _.template
     Thumbs.templater = (function () {
+        //bring a private templater into scope
         var templater = _.template;
-        return function (tmplr) {
+        return function __templater(tmplr) {
             if (tmplr) {
+                //if a templater was passed in then set it
                 templater = tmplr;
+                return templater;
+            } else {
+                //otherwise just get the templater
+                return templater;
             }
-            return templater;
         };
-    })();
+    }());
 
     var TemplateView = Thumbs.View.extend({
         templater: null,
         template: null,
-        constructor: function () {
+
+        initialize: function (options) {
+            this._super("initialize", arguments);
             if (!this.templater) {
-                this.templater = Thumbs.templater;
+                this.templater = thumbs.templater();
             }
             if (this.template) {
                 this._template = this.templater(this.template);

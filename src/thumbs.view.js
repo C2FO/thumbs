@@ -1,4 +1,4 @@
-Thumbs.View = (function (Thumbs) {
+Thumbs.View = (function (Backbone, Thumbs) {
 
     function splitParts(m, cb) {
         return _.each(m.split(Thumbs.MULTI_ARG_TOKEN), function (m) {
@@ -553,4 +553,4 @@ Thumbs.View = (function (Thumbs) {
     });
 
     return View;
-})(Thumbs);
+})(Backbone, Thumbs);

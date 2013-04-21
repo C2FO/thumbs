@@ -48,6 +48,5 @@ describe("thumbs", function () {
 
     });
 
-
 });
 
