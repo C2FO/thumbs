@@ -16,26 +16,46 @@ module.exports = function (grunt) {
                 jshintrc: '.jshintrc'
             },
             thumbs: {
-                src: 'thumbs.js'
+                src: [
+                    'src/*.js'
+                ]
             }
         },
 
         jasmine: {
-            thumbs: {
-                src: [
+            options: {
+                helpers: [
+                    'components/sinon/index.js',
+                    'components/jasmine-sinon/lib/jasmine-sinon.js',
+                    'components/jasmine-jquery/lib/jasmine-jquery.js',
+                    'test/spec/helpers.js'
+                ],
+                vendor: [
                     'components/jquery/jquery.js',
                     'components/underscore/underscore.js',
-                    'components/backbone/backbone.js',
+                    'components/backbone/backbone.js'
+                ]
+            },
+            thumbs: {
+                src: [
+                    'src/thumbs.core.js',
+                    'src/thumbs.helpers.js',
+                    'src/thumbs.model.js',
+                    'src/thumbs.collection.js',
+                    'src/thumbs.router.js',
+                    'src/thumbs.view.js',
+                    'src/thumbs.templateView.js'
+                ],
+                options: {
+                    specs: 'test/spec/*.spec.js'
+                }
+            },
+            old: {
+                src: [
                     'thumbs.js'
                 ],
                 options: {
-                    specs: 'test/spec/*Spec.js',
-                    helpers: [
-                        'components/sinon/index.js',
-                        'components/jasmine-sinon/lib/jasmine-sinon.js',
-                        'components/jasmine-jquery/lib/jasmine-jquery.js',
-                        'test/spec/helpers.js'
-                    ]
+                    specs: 'test/spec/*Spec.js'
                 }
             }
         },
@@ -52,16 +72,20 @@ module.exports = function (grunt) {
             }
         },
         watch: {
-            thumbs: {
+            old: {
                 files: 'thumbs.js',
                 tasks: ['jshint', 'jasmine']
             },
+            thumbs: {
+                files: ['src/*.js', 'test/spec/*.spec.js'],
+                tasks: ['jshint', 'jasmine:thumbs']
+            }
         }
     });
 
     // Default task.
     grunt.registerTask('default', ['jshint', 'concat', 'uglify']);
-    grunt.registerTask('test', ['jshint', 'jasmine']);
+    grunt.registerTask('test', ['jshint', 'jasmine:thumbs']);
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-jasmine');
     grunt.loadNpmTasks('grunt-contrib-watch');
