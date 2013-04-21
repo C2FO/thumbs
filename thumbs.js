@@ -170,7 +170,7 @@
 
                 function findSuper(methodName, childObject) {
                     var object = childObject;
-                    while (object[methodName] === childObject[methodName]) {
+                    while ((object[methodName] === childObject[methodName]) && object.__getConstructor) {
                         var constructor = object.__getConstructor();
                         object = constructor['__super__'];
                     }
@@ -226,6 +226,7 @@
         View = thumbs.View = View.extend(_super);
         Collection = thumbs.Collection = Collection.extend(_super);
         Router = thumbs.Router = Router.extend(_super);
+        History = thumbs.History = History.extend(_super);
 
         var EventDelegator = {
 
@@ -667,13 +668,67 @@
 
         //override the router so we can set our history
         thumbs.Router = Router.extend({
-            route: function (route, name, callback) {
-                this._super("route", arguments);
-                //set thumbs.history for API uniformity
-                if (!thumbs.history) {
-                    thumbs.history = Backbone.history;
+            preRoutes: null,
+
+            _bindRoutes: function () {
+                if (this.preBind && _.isFunction(this.preBind)) {
+                    this.preBind();
                 }
+                this._super("_bindRoutes", arguments);
+            },
+
+            route: function (route) {
+                //set thumbs.history for API uniformity
+                if (thumbs.history) {
+                    Backbone.history = thumbs.history;
+                }
+
+                this._super("route", arguments);
+
+                this.setupPreRoute('all', route);
+                this.setupPreRoute(null, route);
+
                 return this;
+            },
+
+            setupPreRoute: function (path, route) {
+                var preRoute;
+                if (!path) {
+                    path = route;
+                    preRoute = "pre-route_" + route;
+                } else {
+                    preRoute = "pre-route_" + path + route;
+                }
+                if (this.preRoutes && this.preRoutes[path]) {
+                    var callback;
+                    if (_.isFunction(this.preRoutes[path])) {
+                        callback = this.preRoutes[path];
+                    } else if (_.isString(this.preRoutes[path])) {
+                        callback = this[this.preRoutes[path]];
+                    } else if (_.isArray(this.preRoutes[path])) {
+                        var checks = this.preRoutes[path];
+                        callback = _.bind(function () {
+                            var result = true;
+                            for(var i=0; i<checks.length; i++){
+                                result = checks[i].apply(this);
+                                if (!result){
+                                    break;
+                                }
+                            }
+                            return result;
+                        }, this);
+                    } else {
+                        throw("Pre-Route must be a string or a function.");
+                    }
+
+                    if (!_.isRegExp(preRoute)) {
+                        preRoute = this._routeToRegExp(preRoute);
+                    }
+                    thumbs.history.route(preRoute, _.bind(function () {
+
+                        return callback.apply(this);
+                    }, this));
+                }
             }
         });
 
@@ -780,7 +835,7 @@
 
             template: null,
 
-            initialize: function (options) {
+            initialize: function () {
                 this._super("initialize", arguments);
                 if (!this.templater) {
                     this.templater = thumbs.templater();
@@ -824,8 +879,46 @@
 
             }
         });
+
+        History = thumbs.History = History.extend({
+            notFoundRedirect: null,
+
+            checkPreRouteHandler: function (handlers, path, fragment) {
+                var result = true;
+                var routeHandler = _.find(handlers, function (handler) {
+                    return handler.route.test(path + fragment);
+                });
+                if (routeHandler && routeHandler.callback) {
+                    result = routeHandler.callback(fragment);
+                }
+                return result;
+            },
+
+            loadUrl: function (fragmentOverride) {
+                var fragment = this.fragment = this.getFragment(fragmentOverride);
+                var matched = this.checkPreRouteHandler(this.handlers, 'pre-route_all', fragment);
+                if (matched) {
+                    matched = this.checkPreRouteHandler(this.handlers, 'pre-route_', fragment);
+                }
+
+                if (matched) {
+                    matched = this._super("loadUrl", arguments);
+                    if (!matched) {
+                        if (this.options.notFoundRedirect) {
+                            this.navigate(this.options.notFoundRedirect, {trigger: true});
+                            matched = true;
+                        }
+                    }
+                }
+                return matched;
+            }
+        });
+
+        thumbs.history = new History;
+
         return thumbs;
     }
+
 
     if ("undefined" !== typeof exports) {
         if ("undefined" !== typeof module && module.exports) {
