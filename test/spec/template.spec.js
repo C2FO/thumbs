@@ -1,11 +1,11 @@
-describe("thumbs.TemplatingView", function () {
+describe("Thumbs.TemplatingView", function () {
     describe('templating data', function () {
 
-        var TestView = thumbs.TemplateView.extend({
+        var TestView = Thumbs.TemplateView.extend({
             template: '<p>Hello</p>'
         });
 
-        var TestModel = thumbs.Model.extend({});
+        var TestModel = Thumbs.Model.extend({});
 
         beforeEach(function () {
             this.model = new TestModel({firstName: "Bob", lastName: "Yukon"});
@@ -19,11 +19,11 @@ describe("thumbs.TemplatingView", function () {
 
     describe('templating data with interpolation', function () {
 
-        var TestView = thumbs.TemplateView.extend({
+        var TestView = Thumbs.TemplateView.extend({
             template: '<div><div id="firstName"><%= firstName %></div><div id="lastName"><%= lastName %></div></div>'
         });
 
-        var TestModel = thumbs.Model.extend({});
+        var TestModel = Thumbs.Model.extend({});
 
         beforeEach(function () {
             this.model = new TestModel({firstName: "Bob", lastName: "Yukon"});
@@ -36,7 +36,7 @@ describe("thumbs.TemplatingView", function () {
         });
 
         it("should compile and interpolate collection data", function () {
-            var TestCollectionView = thumbs.TemplateView.extend({
+            var TestCollectionView = Thumbs.TemplateView.extend({
                 template: '<div><div class="firstName"><%= firstName %></div><div class="lastName"><%= lastName %></div>',
                 render: function () {
                     var data = this.getTemplateData();
@@ -46,7 +46,7 @@ describe("thumbs.TemplatingView", function () {
                     return this;
                 }
             });
-            var TestCollection = thumbs.Collection.extend({ model: TestModel });
+            var TestCollection = Thumbs.Collection.extend({ model: TestModel });
             var coll = new TestCollection();
             coll.add({ firstName: "Bob", lastName: "Yukon" });
             coll.add({ firstName: "Frank", lastName: "Mountie" });
@@ -58,7 +58,7 @@ describe("thumbs.TemplatingView", function () {
     });
 
     describe("overriding getTemplateData", function () {
-        var TestView = thumbs.TemplateView.extend({
+        var TestView = Thumbs.TemplateView.extend({
             template: '<div><div id="hello"><%= i18n.hello %></div> <div id="firstName"><%= firstName %></div><div id="lastName"><%= lastName %></div></div>',
             getTemplateData: function getTemplateData() {
                 var data = this._super("getTemplateData", arguments);
@@ -67,7 +67,7 @@ describe("thumbs.TemplatingView", function () {
             }
         });
 
-        var TestModel = thumbs.Model.extend({});
+        var TestModel = Thumbs.Model.extend({});
 
         beforeEach(function () {
             this.model = new TestModel({firstName: "Bob", lastName: "Yukon"});

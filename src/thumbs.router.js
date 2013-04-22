@@ -1,4 +1,4 @@
-Thumbs.Router = Backbone.Router.extend(Thumbs.super).extend({
+Thumbs.Router = Backbone.Router.extend(Thumbs._super).extend({
     preRoutes: null,
 
     _bindRoutes: function () {

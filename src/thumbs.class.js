@@ -5,7 +5,7 @@ Thumbs.Class = (function (Thumbs, Backbone) {
         this.initialize.apply(this, arguments);
     };
 
-    _.extend(Class.prototype, Backbone.Events, Thumbs.super, {
+    _.extend(Class.prototype, Backbone.Events, Thumbs._super, {
         initialize: function () {}
     });
 

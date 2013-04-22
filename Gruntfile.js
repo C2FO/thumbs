@@ -39,11 +39,11 @@ module.exports = function (grunt) {
             thumbs: {
                 src: [
                     'src/thumbs.core.js',
-                    'src/thumbs.super.js',
                     'src/thumbs.class.js',
                     'src/thumbs.helpers.js',
                     'src/thumbs.model.js',
                     'src/thumbs.collection.js',
+                    'src/thumbs.history.js',
                     'src/thumbs.router.js',
                     'src/thumbs.view.js',
                     'src/thumbs.templateView.js'
@@ -98,10 +98,6 @@ module.exports = function (grunt) {
         },
 
         watch: {
-            old: {
-                files: 'thumbs.js',
-                tasks: ['jshint', 'jasmine']
-            },
             thumbs: {
                 files: ['src/*.js', 'test/spec/*.spec.js'],
                 tasks: ['jshint', 'jasmine:thumbs']
@@ -113,6 +109,7 @@ module.exports = function (grunt) {
     grunt.registerTask('default', ['jshint', 'concat', 'uglify']);
     grunt.registerTask('test', ['jshint', 'jasmine:thumbs']);
     grunt.registerTask('server', ['connect:server:keepalive']);
+
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-jasmine');
     grunt.loadNpmTasks('grunt-contrib-watch');

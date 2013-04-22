@@ -1,16 +1,122 @@
 var Thumbs = (function (Backbone, _) {
 
-    var Thumbs = {};
-
-    // copy Backbone's namespace over to Thumbs
-    // _.extend(Thumbs, Backbone);
-
-    var _extend = Backbone.Model.extend;
+    var Thumbs = {},
+        _extend = Backbone.Model.extend;
 
     Thumbs.MULTI_ARG_TOKEN = / +/;
     Thumbs.KEY_VALUE_TOKEN = ":";
 
-    // @include ./thumbs.super.js
+    Thumbs.viewRegistry = (function () {
+        var _hash = {},
+            _length = 0;
+
+        var viewRegistry = {
+            _hash: _hash,
+            getEnclosingView: function (searchNode) {
+                var id, node = searchNode;
+                while (node) {
+                    if (node !== searchNode && (id = node.nodeType === 1 && node.getAttribute("thumbs-id"))) {
+                        return _hash[id];
+                    }
+                    node = node.parentNode;
+                }
+                return null;
+            },
+            remove: function (id) {
+                if (_hash.hasOwnProperty(id)) {
+                    delete _hash[id];
+                    _length--;
+                }
+            },
+            add: function (view) {
+                var id = view.thumbsId;
+                if (_hash.hasOwnProperty(id)) {
+                    throw new Error("Tried to register view with id " + id + " but that id is already registered");
+                }
+                if (id) {
+                    _hash[id] = view;
+                    _length++;
+                }
+            },
+            get: function (id) {
+                return "string" === typeof id ? _hash[id] : id;
+            },
+            uniqueId: function () {
+                return _.uniqueId("thumbs_view_");
+            },
+            getSubViews: function (node) {
+                var ret = [];
+
+                function gatherViews(root) {
+                    var thumbsId, node, view;
+                    for (node = root.firstChild; node; node = node.nextSibling) {
+                        if (node.nodeType === 1) {
+                            if ((thumbsId = node.getAttribute("thumbs-id")) && (view = _hash[thumbsId])) {
+                                ret.push(view);
+                            }
+                        }
+                    }
+                }
+
+                gatherViews(node);
+                return ret;
+            },
+            getByNode: function (node) {
+                return node ? _hash[node.thumbsId || node.getAttribute("thumbs-id")] : undefined;
+            },
+            toArray: function () {
+                return _.values(_hash);
+            }
+        };
+
+        return viewRegistry;
+    })();
+
+    Thumbs.viewByNode = Thumbs.viewRegistry.getByNode;
+    Thumbs.viewById = Thumbs.viewRegistry.get;
+
+
+    Thumbs.extend = function(prototype, staticProps) {
+        var child = _extend.apply(this, arguments);
+        child.prototype.__getConstructor = function () {
+            return child;
+        };
+
+        return child;
+    };
+
+    Backbone.Model.extend = Backbone.Collection.extend = Backbone.View.extend = Backbone.History.extend = Backbone.Router.extend = Thumbs.extend;
+
+    Thumbs._super = {
+        _super: (function () {
+            function findSuper(methodName, childObject) {
+                var object = childObject;
+                while (object[methodName] === childObject[methodName] && object.__getConstructor) {
+                    var constructor = object.__getConstructor();
+                    object = constructor['__super__'];
+                }
+
+                return object;
+            }
+
+            return function(methodName, args) {
+                if (!this._superCallObjects) {
+                    this._superCallObjects = {};
+                }
+
+                var result,
+                currentObject = this._superCallObjects[methodName] || this,
+                parentObject = findSuper(methodName, currentObject);
+
+                this._superCallObjects[methodName] = parentObject;
+
+                result = parentObject[methodName].apply(this, args || {});
+                delete this._superCallObjects[methodName];
+                return result;
+            };
+        })()
+    };
+
     // @include ./thumbs.class.js
     // @include ./thumbs.helpers.js
     // @include ./thumbs.model.js

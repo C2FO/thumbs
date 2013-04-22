@@ -1,5 +1,5 @@
-describe("thumbs.View Formatter", function () {
-    var View = thumbs.View.extend({
+describe("Thumbs.View Formatter", function () {
+    var View = Thumbs.View.extend({
         template: null,
 
         initialize: function (options) {
@@ -45,11 +45,11 @@ describe("thumbs.View Formatter", function () {
     });
 
 
-    var TestModel = thumbs.Model.extend({});
+    var TestModel = Thumbs.Model.extend({});
 
     describe("should format values when data-thumbs-format is specified", function () {
 
-        it("use the specified formatter", function () {
+        it("using the specified formatter", function () {
             var model = new TestModel({firstName: "bob", lastName: "YUKON"});
             var view = new TestView({ model: model });
             view.render();

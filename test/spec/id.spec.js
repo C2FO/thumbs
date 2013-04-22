@@ -1,8 +1,8 @@
-describe("thumbs.View identifier", function () {
+describe("Thumbs.View identifier", function () {
     var tmpl, View;
     beforeEach(function () {
         tmpl = '<input type="text" data-thumbs-id="foo" val="Test Input"/>';
-        View = thumbs.View.extend({
+        View = Thumbs.View.extend({
             render: function () {
                 this.$el.append($(tmpl));
                 this._super('render', arguments);

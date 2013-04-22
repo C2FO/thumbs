@@ -1,8 +1,9 @@
-Thumbs.View = (function (Backbone, Thumbs) {
+Thumbs.View = (function (Backbone, _, Thumbs) {
+    var viewRegistry = Thumbs.viewRegistry;
 
     function splitParts(m, cb) {
-        return _.each(m.split(Thumbs.MULTI_ARG_TOKEN), function (m) {
-            cb(_.map(m.split(Thumbs.KEY_VALUE_TOKEN), function (m) {
+        return _.each(m.split(thumbs.MULTI_ARG_TOKEN), function (m) {
+            cb(_.map(m.split(thumbs.KEY_VALUE_TOKEN), function (m) {
                 return $.trim(m);
             }));
         });
@@ -48,88 +49,7 @@ Thumbs.View = (function (Backbone, Thumbs) {
         }
     }
 
-    var viewRegistry = Thumbs.viewRegistry = (function () {
-        var _hash = {},
-        _length = 0;
-
-        function __getById(id) {
-            return "string" === typeof id ? _hash[id] : id;
-        }
-
-        function _getByNode(node) {
-            return node ? _hash[node.thumbsId || node.getAttribute("thumbs-id")] : undefined;
-        }
-
-        function _toArray() {
-            return _.values(_hash);
-        }
-
-
-        function _getUniqueId() {
-            return _.uniqueId("thumbs_view_");
-        }
-
-        function _getViews(node) {
-            var ret = [];
-
-            function gatherViews(root) {
-                var thumbsId, node, view;
-                for (node = root.firstChild; node; node = node.nextSibling) {
-                    if (node.nodeType === 1) {
-                        if ((thumbsId = node.getAttribute("thumbs-id")) && (view = _hash[thumbsId])) {
-                            ret.push(view);
-                        }
-                    }
-                }
-            }
-
-            gatherViews(node);
-            return ret;
-        }
-
-        function __addView(view) {
-            var id = view.thumbsId;
-            if (_hash.hasOwnProperty(id)) {
-                throw new Error("Tried to register view with id " + id + " but that id is already registered");
-            }
-            if (id) {
-                _hash[id] = view;
-                _length++;
-            }
-        }
-
-        function __removeView(id) {
-            if (_hash.hasOwnProperty(id)) {
-                delete _hash[id];
-                _length--;
-            }
-        }
-
-        function _getEnclosingView(searchNode) {
-            var id, node = searchNode;
-            while (node) {
-                if (node !== searchNode && (id = node.nodeType === 1 && node.getAttribute("thumbs-id"))) {
-                    return _hash[id];
-                }
-                node = node.parentNode;
-            }
-            return null;
-        }
-
-        return {
-            _hash: _hash,
-            getEnclosingView: _getEnclosingView,
-            remove: __removeView,
-            add: __addView,
-            "get": __getById,
-            uniqueId: _getUniqueId,
-            getSubViews: _getViews,
-            getByNode: _getByNode,
-            toArray: _toArray
-        };
-    }());
-
-    var View = Backbone.View.extend(Thumbs.super).extend({
+    var View = Backbone.View.extend(Thumbs._super).extend({
         _subviews: null,
         __subviews: null,
         __identifiers: null,
@@ -137,7 +57,7 @@ Thumbs.View = (function (Backbone, Thumbs) {
         __events: null,
 
         initialize: function () {
-            _.bindAll(this, "render", "__updateValues", "__setValues", "setupType", "setupBind", "setupClassBind", "setupEventBind", "findThumbsBind", "turnOnModelListeners", "turnOffModelListeners", "setupBinders");
+            _.bindAll(this, "setElData", "__updateValues", "__setValues", "setupType", "setupBind", "setupClassBind", "setupEventBind", "findThumbsBind", "turnOnModelListeners", "turnOffModelListeners", "setupBinders");
             this.thumbsId = viewRegistry.uniqueId();
             viewRegistry.add(this);
             this._subviews = {};
@@ -339,14 +259,12 @@ Thumbs.View = (function (Backbone, Thumbs) {
                 this[id] = this['$' + id] = null;
             }, this);
             this.__identifiers = [];
-
-            return this;
         },
 
         checkForIdentifiers: function () {
             var self = this;
             this.removeIdentifiers();
-            this.$('[data-thumbs-id]').each(function () {
+            this.$('[data-thumbs-id]').each(function (el) {
                 if (viewRegistry.getEnclosingView(this) === self) {
                     var $this = $(this);
                     var id = $this.data('thumbs-id');
@@ -355,24 +273,27 @@ Thumbs.View = (function (Backbone, Thumbs) {
                     self.__identifiers.push(id);
                 }
             });
-
             return this;
         },
 
         findEl: function () {
-            var el = this.$('[data-thumbs-el]').first().get();
+            var setElement = _.bind(this.setElement, this);
+            //find an elements that are marked with data-thumbs-el
+            var el = this.$("[data-thumbs-el]").first().get();
             if (el.length) {
+                //we found some!
                 el = el[0];
+                //ensure that its not already our dom element
                 if (el !== this.el) {
-                    this.setElement(el);
+                    //set it
+                    setElement(el);
                 }
             }
-
             return this;
         },
 
         checkFormatting: function (el, data, type) {
-            var formatter, $el = this($el), args = Array.prototype.slice.call(arguments, 0);
+            var formatter, $el = $(el), args = Array.prototype.slice.call(arguments, 0);
             data = args.length > 1 ? data : $el.text();
             data = (data !== null && "undefined" !== typeof data) ? data : "";
             formatter = $el.data("thumbs-format");
@@ -396,20 +317,21 @@ Thumbs.View = (function (Backbone, Thumbs) {
         },
 
         renderFormatters: function () {
-            var checkFormatting = _.bind(this.checkFormatting, this);
-            this.$(['data-thumbs-format']).each(function () {
-                checkFormatting(this);
+            var self = this;
+            this.$('[data-thumbs-format]').each(function () {
+                self.checkFormatting(this);
             });
 
             return this;
         },
 
         setElement: function () {
-            var ret = this._super('setElement', arguments);
-            if (this.$el) {
+            var ret = this._super("setElement", arguments);
+            if (this.el) {
                 this.$el.attr("thumbs-id", this.thumbsId);
+            } else {
+                viewRegistry.remove(this.thumbsId);
             }
-
             return this;
         },
 
@@ -451,29 +373,30 @@ Thumbs.View = (function (Backbone, Thumbs) {
                 if (viewRegistry.getEnclosingView(this) === self) {
                     var $this = $(this), id = _.uniqueId('thumbs_');
                     $this.addClass(id);
-                    splitParts($this.data("thumbs-delegate"), function (data) {
+                    splitParts($this.data('thumbs-delegate'), function (data) {
                         var event = data[0], func = data[1];
                         self.events[event + ' .' + id] = func;
                         if (thumbsView) {
+                            //Listen to event if this is a thumbs-view
                             self.listenTo(thumbsView, event, self[func]);
                         }
                     });
                 }
             });
             this.delegateEvents();
-
             return this;
         },
 
         render: function () {
+            // this order matters
             return this
-                .assign(this._subviews)
-                .findEl()
-                .renderFormatters()
-                .checkForIdentifiers()
-                .setupBinders()
-                .checkForEvents()
                 .checkForSubviews()
+                .checkForEvents()
+                .setupBinders()
+                .checkForIdentifiers()
+                .renderFormatters()
+                .findEl()
+                .assign(this._subviews)
                 ._super('render', arguments);
         },
 
@@ -544,8 +467,10 @@ Thumbs.View = (function (Backbone, Thumbs) {
 
                 this.__subviews = [];
             }
+            this.stopListening();
             this.removeSubViews();
             this.turnOffModelListeners();
+            this.removeIdentifiers();
             this.__monitors = {};
             this.__events = {};
             return this._super('remove', arguments);
@@ -553,4 +478,4 @@ Thumbs.View = (function (Backbone, Thumbs) {
     });
 
     return View;
-})(Backbone, Thumbs);
+})(Backbone, _, Thumbs);
