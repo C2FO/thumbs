@@ -16,7 +16,7 @@ Thumbs.super = (function (Thumbs, Backbone) {
         _super: (function () {
             function findSuper(methodName, childObject) {
                 var object = childObject;
-                while (object[methodName] === childObject[methodName]) {
+                while (object[methodName] === childObject[methodName] && object.__getConstructor) {
                     var constructor = object.__getConstructor();
                     object = constructor['__super__'];
                 }
