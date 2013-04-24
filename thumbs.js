@@ -710,9 +710,9 @@
                         var checks = this.preRoutes[path];
                         callback = _.bind(function () {
                             var result = true;
-                            for(var i=0; i<checks.length; i++){
+                            for (var i = 0; i < checks.length; i++) {
                                 result = checks[i].apply(this);
-                                if (!result){
+                                if (!result) {
                                     break;
                                 }
                             }
