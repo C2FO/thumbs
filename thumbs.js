@@ -601,7 +601,7 @@
             },
 
             remove: function () {
-                if (this._subviews.length) {
+                if (this.__subviews.length) {
                     _.each(this.__subviews, function (subview) {
                         subview.remove();
                     });
@@ -631,7 +631,8 @@
                     var args = this._parseViewArgs($el.data('thumbs-args'));
                     _.extend(args, { el: el});
                     var view = new SubView(args);
-                    this.__subviews.push(view.render());
+                    view.render();
+                    this.__subviews.push(view);
                     if (!!(id = $el.data('thumbs-id'))) {
                         this["$" + id] = view;
                     }
@@ -709,9 +710,9 @@
                         var checks = this.preRoutes[path];
                         callback = _.bind(function () {
                             var result = true;
-                            for(var i=0; i<checks.length; i++){
+                            for (var i = 0; i < checks.length; i++) {
                                 result = checks[i].apply(this);
-                                if (!result){
+                                if (!result) {
                                     break;
                                 }
                             }
