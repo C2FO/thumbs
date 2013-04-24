@@ -601,7 +601,7 @@
             },
 
             remove: function () {
-                if (this._subviews.length) {
+                if (this.__subviews.length) {
                     _.each(this.__subviews, function (subview) {
                         subview.remove();
                     });
@@ -631,7 +631,8 @@
                     var args = this._parseViewArgs($el.data('thumbs-args'));
                     _.extend(args, { el: el});
                     var view = new SubView(args);
-                    this.__subviews.push(view.render());
+                    view.render();
+                    this.__subviews.push(view);
                     if (!!(id = $el.data('thumbs-id'))) {
                         this["$" + id] = view;
                     }
