@@ -28,7 +28,7 @@ module.exports = function (grunt) {
                     'components/sinon/index.js',
                     'components/jasmine-sinon/lib/jasmine-sinon.js',
                     'components/jasmine-jquery/lib/jasmine-jquery.js',
-                    'test/spec/helpers.js'
+                    'test/helpers.js'
                 ],
                 vendor: [
                     'components/jquery/jquery.js',
