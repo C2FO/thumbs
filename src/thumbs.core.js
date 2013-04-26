@@ -1,10 +1,33 @@
-var Thumbs = (function (Backbone, _) {
+(function (Backbone, _) {
+    /*globals module:true,exports:true,define:true,require:true*/
 
-    var Thumbs = {},
+    var root = this,
+        previousThumbs = root.Thumbs,
+        Thumbs = {},
         _extend = Backbone.Model.extend;
+
+    Backbone.Thumbs = Thumbs;
+
+    if (typeof exports === 'object') {
+        var underscore = require('undersore'),
+            backbone = require('backbone');
+
+        module.exports = Thumbs;
+    } else  if (typeof define === 'function' && define.amd) {
+        define(['underscore', 'backbone'], function (_, Backbone) {
+            return Thumbs;
+        });
+    } else {
+        root.Thumbs = root.thumbs = Thumbs;
+    }
 
     Thumbs.MULTI_ARG_TOKEN = / +/;
     Thumbs.KEY_VALUE_TOKEN = ":";
+
+    Thumbs.noConflict = function () {
+        root.Thumbs = previousThumbs;
+        return this;
+    };
 
     Thumbs.viewRegistry = (function () {
         var _hash = {},
@@ -125,7 +148,7 @@ var Thumbs = (function (Backbone, _) {
     // @include ./thumbs.view.js
     // @include ./thumbs.templateView.js
 
-    this.thumbs = Thumbs;
+    root.thumbs = Thumbs;
 
     return Thumbs;
 }).call(this, Backbone, _);

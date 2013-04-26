@@ -1,4 +1,14 @@
 describe("Thumbs.core", function () {
+    describe("noConflict", function () {
+        it("should reset the value of Thumbs", function () {
+            expect(Thumbs).toBeDefined();
+            var _thumbs = Thumbs.noConflict();
+            expect(Thumbs).not.toBeDefined();
+            // reset the value of Thumbs
+            Thumbs = _thumbs;
+        });
+    });
+
     describe('Thumbs._super', function () {
         var Model = Thumbs.Model.extend(Thumbs._super).extend({
                 greet: function (name) {
