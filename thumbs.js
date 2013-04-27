@@ -780,7 +780,5 @@
 })(Thumbs);
 
 
-    root.thumbs = Thumbs;
-
     return Thumbs;
 }).call(this, Backbone, _);
