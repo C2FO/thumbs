@@ -42,7 +42,6 @@ module.exports = function (grunt) {
                 src: [
                     'lib/thumbs.core.js',
                     'lib/thumbs.class.js',
-                    'lib/thumbs.helpers.js',
                     'lib/thumbs.model.js',
                     'lib/thumbs.collection.js',
                     'lib/thumbs.history.js',
