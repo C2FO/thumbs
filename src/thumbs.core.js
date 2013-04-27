@@ -1,3 +1,4 @@
+// @echo banner
 (function (Backbone, _) {
     /*globals module:true,exports:true,define:true,require:true*/
 

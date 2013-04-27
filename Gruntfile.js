@@ -4,11 +4,13 @@ module.exports = function (grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         meta: {
-            banner: '/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
-                '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
-                '<%= pkg.homepage ? "* " + pkg.homepage + "\n" : "" %>' +
-                '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author %>;' +
-                ' Licensed <%= pkg.license %> */'
+            banner:
+                '// Thumbs.js <%= pkg.version %>\n' +
+                '//\n' +
+                '// Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author %>.\n' +
+                '// Distributed under <%= pkg.license %> license.\n' +
+                '//\n' +
+                '// http://thumbsjs.com\n'
         },
 
         jshint: {
@@ -52,19 +54,20 @@ module.exports = function (grunt) {
                     specs: 'test/spec/*.spec.js'
                 }
             },
-            old: {
-                src: [
-                    'thumbs.js'
-                ],
+            build: {
+                src: ['thumbs.min.js'],
                 options: {
-                    specs: 'test/spec/*Spec.js'
+                    specs: '<%= jasmine.thumbs.options.specs %>'
                 }
             }
         },
 
         preprocess: {
             options: {
-                inline: true
+                inline: true,
+                context: {
+                    banner: '<%= meta.banner %>'
+                }
             },
             build: {
                 files: {
@@ -73,14 +76,10 @@ module.exports = function (grunt) {
             }
         },
 
-        concat: {
-            dist: {
-                src: ['<banner:meta.banner>', '<%= pkg.name %>.js>'],
-                dest: 'dist/<%= pkg.name %>.js'
-            }
-        },
-
         uglify: {
+            options: {
+                banner: '<%= meta.banner %>'
+            },
             dist: {
                 src: ['<banner:meta.banner>', 'thumbs.js'],
                 dest: '<%= pkg.name %>.min.js'
@@ -97,6 +96,8 @@ module.exports = function (grunt) {
             }
         },
 
+        clean: ['node_modules'],
+
         watch: {
             thumbs: {
                 files: ['src/*.js', 'test/spec/*.spec.js'],
@@ -106,16 +107,17 @@ module.exports = function (grunt) {
     });
 
     // Default task.
-    grunt.registerTask('default', ['jshint', 'concat', 'uglify']);
+    grunt.registerTask('default', ['build']);
+    grunt.registerTask('build', ['jshint', 'test', 'preprocess', 'uglify']);
     grunt.registerTask('test', ['jshint', 'jasmine:thumbs']);
     grunt.registerTask('server', ['connect:server:keepalive']);
 
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-jasmine');
     grunt.loadNpmTasks('grunt-contrib-watch');
-    grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-connect');
+    grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-preprocess');
 
 };
