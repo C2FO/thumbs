@@ -19,7 +19,7 @@ module.exports = function (grunt) {
             },
             thumbs: {
                 src: [
-                    'lib/*.js'
+                    'src/*.js'
                 ]
             }
         },
@@ -40,14 +40,14 @@ module.exports = function (grunt) {
             },
             thumbs: {
                 src: [
-                    'lib/thumbs.core.js',
-                    'lib/thumbs.class.js',
-                    'lib/thumbs.model.js',
-                    'lib/thumbs.collection.js',
-                    'lib/thumbs.history.js',
-                    'lib/thumbs.router.js',
-                    'lib/thumbs.view.js',
-                    'lib/thumbs.templateView.js'
+                    'src/thumbs.core.js',
+                    'src/thumbs.class.js',
+                    'src/thumbs.model.js',
+                    'src/thumbs.collection.js',
+                    'src/thumbs.history.js',
+                    'src/thumbs.router.js',
+                    'src/thumbs.view.js',
+                    'src/thumbs.templateView.js'
                 ],
                 options: {
                     specs: 'test/spec/*.spec.js'
@@ -70,7 +70,7 @@ module.exports = function (grunt) {
             },
             build: {
                 files: {
-                    'thumbs.js': 'lib/thumbs.core.js'
+                    'thumbs.js': 'src/thumbs.core.js'
                 }
             }
         },
@@ -99,7 +99,7 @@ module.exports = function (grunt) {
 
         watch: {
             thumbs: {
-                files: ['lib/*.js', 'test/spec/*.spec.js'],
+                files: ['src/*.js', 'test/spec/*.spec.js'],
                 tasks: ['jshint', 'jasmine:thumbs']
             }
         }
