@@ -1,4 +1,4 @@
-Thumbs.TemplateView = (function (Thumbs) {
+Thumbs.TemplateView = (function () {
 
     //helper to set a shared templater. Defaults to _.template
     Thumbs.templater = (function () {
@@ -59,4 +59,4 @@ Thumbs.TemplateView = (function (Thumbs) {
     });
 
     return TemplateView;
-})(Thumbs);
+})();

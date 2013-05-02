@@ -1,4 +1,4 @@
-Thumbs.History = (function (Thumbs, Backbone, _) {
+Thumbs.History = (function () {
     var History = Backbone.History.extend({
         notFoundRedirect: null,
 
@@ -36,4 +36,4 @@ Thumbs.History = (function (Thumbs, Backbone, _) {
     Thumbs.history = Backbone.history = new History();
 
     return History;
-})(Thumbs, Backbone, _);
+})();

@@ -1,4 +1,4 @@
-Thumbs.viewRegistry = (function (_) {
+Thumbs.viewRegistry = (function () {
     var _hash = {},
         _length = 0;
 
@@ -77,4 +77,4 @@ Thumbs.viewRegistry = (function (_) {
         getByNode: _getByNode,
         toArray: _toArray
     };
-})(_);
+})();

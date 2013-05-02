@@ -147,7 +147,7 @@
         })()
     };
 
-    Thumbs.Class = (function (Thumbs, Backbone) {
+    Thumbs.Class = (function () {
 
     var Class = function (options) {
         this.cid = _.uniqueId("class");
@@ -161,7 +161,7 @@
     Class.extend = Thumbs.extend;
 
     return Class;
-})(Thumbs, Backbone);
+})();
 
     Thumbs.Model = Backbone.Model.extend(Thumbs._super).extend({
 });
@@ -234,7 +234,7 @@
     }
 });
 
-    Thumbs.View = (function (Backbone, _, Thumbs) {
+    Thumbs.View = (function () {
     var viewRegistry = Thumbs.viewRegistry;
 
     function splitParts(m, cb) {
@@ -714,9 +714,9 @@
     });
 
     return View;
-})(Backbone, _, Thumbs);
+})();
 
-    Thumbs.TemplateView = (function (Thumbs) {
+    Thumbs.TemplateView = (function () {
 
     //helper to set a shared templater. Defaults to _.template
     Thumbs.templater = (function () {
@@ -777,7 +777,7 @@
     });
 
     return TemplateView;
-})(Thumbs);
+})();
 
 
     return Thumbs;

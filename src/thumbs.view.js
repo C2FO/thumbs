@@ -1,4 +1,4 @@
-Thumbs.View = (function (Backbone, _, Thumbs) {
+Thumbs.View = (function () {
     var viewRegistry = Thumbs.viewRegistry;
 
     function splitParts(m, cb) {
@@ -478,4 +478,4 @@ Thumbs.View = (function (Backbone, _, Thumbs) {
     });
 
     return View;
-})(Backbone, _, Thumbs);
+})();

@@ -1,4 +1,4 @@
-Thumbs.Class = (function (Thumbs, Backbone) {
+Thumbs.Class = (function () {
 
     var Class = function (options) {
         this.cid = _.uniqueId("class");
@@ -12,4 +12,4 @@ Thumbs.Class = (function (Thumbs, Backbone) {
     Class.extend = Thumbs.extend;
 
     return Class;
-})(Thumbs, Backbone);
+})();
