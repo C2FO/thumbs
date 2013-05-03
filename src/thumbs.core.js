@@ -9,19 +9,6 @@
 
     Backbone.Thumbs = Thumbs;
 
-    if (typeof exports === 'object') {
-        var underscore = require('undersore'),
-            backbone = require('backbone');
-
-        module.exports = Thumbs;
-    } else  if (typeof define === 'function' && define.amd) {
-        define(['underscore', 'backbone'], function (_, Backbone) {
-            return Thumbs;
-        });
-    } else {
-        root.Thumbs = root.thumbs = Thumbs;
-    }
-
     Thumbs.MULTI_ARG_TOKEN = / +/;
     Thumbs.KEY_VALUE_TOKEN = ":";
 
@@ -148,5 +135,17 @@
     // @include ./thumbs.view.js
     // @include ./thumbs.templateView.js
 
-    return Thumbs;
+    if (typeof exports === 'object') {
+        var underscore = require('undersore'),
+            backbone = require('backbone');
+
+        module.exports = Thumbs;
+    } else  if (typeof define === 'function' && define.amd) {
+        define(['underscore', 'backbone'], function (_, Backbone) {
+            return Thumbs;
+        });
+    } else {
+        root.Thumbs = root.thumbs = Thumbs;
+    }
+
 }).call(this, Backbone, _);
