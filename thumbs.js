@@ -783,7 +783,7 @@
             return defineThumbs(Backbone, _);
         });
     } else {
-        root.Thumbs = root.thumbs = defineThumbs(Backbone, _);
+        root.Thumbs = root.thumbs = defineThumbs(root.Backbone, root._);
     }
 
 }).call(this);
