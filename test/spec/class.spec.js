@@ -1,6 +1,6 @@
-describe("thumbs.Class", function () {
+describe("Thumbs.Class", function () {
 
-    var Animal = thumbs.Class.extend({});
+    var Animal = Thumbs.Class.extend({});
 
     beforeEach(function () {
     });
@@ -37,7 +37,7 @@ describe("thumbs.Class", function () {
         expect(dog.bark()).toBe('woof ruff');
     });
 
-    it("should inherit thumbs.Events", function () {
+    it("should inherit Thumbs.Events", function () {
         var Dog = Animal.extend({
             bark: function () {
                 this.trigger('bark', true);
