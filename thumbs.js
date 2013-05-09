@@ -5,136 +5,138 @@
 //
 // http://thumbsjs.com
 
-(function (Backbone, _) {
+(function () {
     /*globals module:true,exports:true,define:true,require:true*/
 
-    var root = this,
-        previousThumbs = root.Thumbs,
-        Thumbs = {},
-        _extend = Backbone.Model.extend;
+    var root = this;
 
-    Backbone.Thumbs = Thumbs;
+    function defineThumbs(Backbone, _) {
+        var previousThumbs = root.Thumbs,
+            Thumbs = {},
+            _extend = Backbone.Model.extend;
 
-    Thumbs.MULTI_ARG_TOKEN = / +/;
-    Thumbs.KEY_VALUE_TOKEN = ":";
+        Backbone.Thumbs = Thumbs;
 
-    Thumbs.noConflict = function () {
-        root.Thumbs = previousThumbs;
-        return this;
-    };
+        Thumbs.MULTI_ARG_TOKEN = / +/;
+        Thumbs.KEY_VALUE_TOKEN = ":";
 
-    Thumbs.viewRegistry = (function () {
-        var _hash = {},
-            _length = 0;
+        Thumbs.noConflict = function () {
+            root.Thumbs = previousThumbs;
+            return this;
+        };
 
-        var viewRegistry = {
-            _hash: _hash,
-            getEnclosingView: function (searchNode) {
-                var id, node = searchNode;
-                while (node) {
-                    if (node !== searchNode && (id = node.nodeType === 1 && node.getAttribute("thumbs-id"))) {
-                        return _hash[id];
+        Thumbs.viewRegistry = (function () {
+            var _hash = {},
+                _length = 0;
+
+            var viewRegistry = {
+                _hash: _hash,
+                getEnclosingView: function (searchNode) {
+                    var id, node = searchNode;
+                    while (node) {
+                        if (node !== searchNode && (id = node.nodeType === 1 && node.getAttribute("thumbs-id"))) {
+                            return _hash[id];
+                        }
+                        node = node.parentNode;
                     }
-                    node = node.parentNode;
-                }
-                return null;
-            },
-            remove: function (id) {
-                if (_hash.hasOwnProperty(id)) {
-                    delete _hash[id];
-                    _length--;
-                }
-            },
-            add: function (view) {
-                var id = view.thumbsId;
-                if (_hash.hasOwnProperty(id)) {
-                    throw new Error("Tried to register view with id " + id + " but that id is already registered");
-                }
-                if (id) {
-                    _hash[id] = view;
-                    _length++;
-                }
-            },
-            get: function (id) {
-                return "string" === typeof id ? _hash[id] : id;
-            },
-            uniqueId: function () {
-                return _.uniqueId("thumbs_view_");
-            },
-            getSubViews: function (node) {
-                var ret = [];
+                    return null;
+                },
+                remove: function (id) {
+                    if (_hash.hasOwnProperty(id)) {
+                        delete _hash[id];
+                        _length--;
+                    }
+                },
+                add: function (view) {
+                    var id = view.thumbsId;
+                    if (_hash.hasOwnProperty(id)) {
+                        throw new Error("Tried to register view with id " + id + " but that id is already registered");
+                    }
+                    if (id) {
+                        _hash[id] = view;
+                        _length++;
+                    }
+                },
+                get: function (id) {
+                    return "string" === typeof id ? _hash[id] : id;
+                },
+                uniqueId: function () {
+                    return _.uniqueId("thumbs_view_");
+                },
+                getSubViews: function (node) {
+                    var ret = [];
 
-                function gatherViews(root) {
-                    var thumbsId, node, view;
-                    for (node = root.firstChild; node; node = node.nextSibling) {
-                        if (node.nodeType === 1) {
-                            if ((thumbsId = node.getAttribute("thumbs-id")) && (view = _hash[thumbsId])) {
-                                ret.push(view);
+                    function gatherViews(root) {
+                        var thumbsId, node, view;
+                        for (node = root.firstChild; node; node = node.nextSibling) {
+                            if (node.nodeType === 1) {
+                                if ((thumbsId = node.getAttribute("thumbs-id")) && (view = _hash[thumbsId])) {
+                                    ret.push(view);
+                                }
                             }
                         }
                     }
+
+                    gatherViews(node);
+                    return ret;
+                },
+                getByNode: function (node) {
+                    return node ? _hash[node.thumbsId || node.getAttribute("thumbs-id")] : undefined;
+                },
+                toArray: function () {
+                    return _.values(_hash);
                 }
+            };
 
-                gatherViews(node);
-                return ret;
-            },
-            getByNode: function (node) {
-                return node ? _hash[node.thumbsId || node.getAttribute("thumbs-id")] : undefined;
-            },
-            toArray: function () {
-                return _.values(_hash);
-            }
-        };
+            return viewRegistry;
+        })();
 
-        return viewRegistry;
-    })();
-
-    Thumbs.viewByNode = Thumbs.viewRegistry.getByNode;
-    Thumbs.viewById = Thumbs.viewRegistry.get;
+        Thumbs.viewByNode = Thumbs.viewRegistry.getByNode;
+        Thumbs.viewById = Thumbs.viewRegistry.get;
 
 
-    Thumbs.extend = function(prototype, staticProps) {
-        var child = _extend.apply(this, arguments);
-        child.prototype.__getConstructor = function () {
+        Thumbs.extend = function(prototype, staticProps) {
+            var child = _extend.apply(this, arguments);
+            child.prototype.__getConstructor = function () {
+                return child;
+            };
+
             return child;
         };
 
-        return child;
-    };
+        Backbone.Model.extend = Backbone.Collection.extend = Backbone.View.extend = Backbone.History.extend = Backbone.Router.extend = Thumbs.extend;
 
-    Backbone.Model.extend = Backbone.Collection.extend = Backbone.View.extend = Backbone.History.extend = Backbone.Router.extend = Thumbs.extend;
+        Thumbs._super = {
+            _super: (function () {
+                function findSuper(methodName, childObject) {
+                    var object = childObject;
+                    while (object[methodName] === childObject[methodName] && object.__getConstructor) {
+                        var constructor = object.__getConstructor();
+                        object = constructor['__super__'];
+                    }
 
-    Thumbs._super = {
-        _super: (function () {
-            function findSuper(methodName, childObject) {
-                var object = childObject;
-                while (object[methodName] === childObject[methodName] && object.__getConstructor) {
-                    var constructor = object.__getConstructor();
-                    object = constructor['__super__'];
+                    return object;
                 }
 
-                return object;
-            }
+                return function(methodName, args) {
+                    if (!this._superCallObjects) {
+                        this._superCallObjects = {};
+                    }
 
-            return function(methodName, args) {
-                if (!this._superCallObjects) {
-                    this._superCallObjects = {};
-                }
+                    var result,
+                    currentObject = this._superCallObjects[methodName] || this,
+                    parentObject = findSuper(methodName, currentObject);
 
-                var result,
-                currentObject = this._superCallObjects[methodName] || this,
-                parentObject = findSuper(methodName, currentObject);
+                    this._superCallObjects[methodName] = parentObject;
 
-                this._superCallObjects[methodName] = parentObject;
+                    result = parentObject[methodName].apply(this, args || {});
+                    delete this._superCallObjects[methodName];
+                    return result;
+                };
+            })()
+        };
 
-                result = parentObject[methodName].apply(this, args || {});
-                delete this._superCallObjects[methodName];
-                return result;
-            };
-        })()
-    };
-
-    Thumbs.Class = (function () {
+        Thumbs.Class = (function () {
 
     var Class = function (options) {
         this.cid = _.uniqueId("class");
@@ -150,13 +152,13 @@
     return Class;
 })();
 
-    Thumbs.Model = Backbone.Model.extend(Thumbs._super).extend({
+        Thumbs.Model = Backbone.Model.extend(Thumbs._super).extend({
 });
 
-    Thumbs.Collection = Backbone.Collection.extend(Thumbs._super).extend({
+        Thumbs.Collection = Backbone.Collection.extend(Thumbs._super).extend({
 });
 
-    Thumbs.Router = Backbone.Router.extend(Thumbs._super).extend({
+        Thumbs.Router = Backbone.Router.extend(Thumbs._super).extend({
     preRoutes: null,
 
     _bindRoutes: function () {
@@ -221,7 +223,7 @@
     }
 });
 
-    Thumbs.View = (function () {
+        Thumbs.View = (function () {
     var viewRegistry = Thumbs.viewRegistry;
 
     function splitParts(m, cb) {
@@ -703,7 +705,7 @@
     return View;
 })();
 
-    Thumbs.TemplateView = (function () {
+        Thumbs.TemplateView = (function () {
 
     //helper to set a shared templater. Defaults to _.template
     Thumbs.templater = (function () {
@@ -767,17 +769,21 @@
 })();
 
 
+        return Thumbs;
+    }
+
+
     if (typeof exports === 'object') {
         var underscore = require('undersore'),
             backbone = require('backbone');
 
-        module.exports = Thumbs;
+        module.exports = defineThumbs(backbone, underscore);
     } else  if (typeof define === 'function' && define.amd) {
         define(['underscore', 'backbone'], function (_, Backbone) {
-            return Thumbs;
+            return defineThumbs(Backbone, _);
         });
     } else {
-        root.Thumbs = root.thumbs = Thumbs;
+        root.Thumbs = root.thumbs = defineThumbs(Backbone, _);
     }
 
-}).call(this, Backbone, _);
+}).call(this);
