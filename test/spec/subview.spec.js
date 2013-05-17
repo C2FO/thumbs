@@ -1,4 +1,4 @@
-describe("thumbs.View subview", function () {
+describe("Thumbs.View subview", function () {
     var spy = sinon.spy(),
         subTmpl = '<div id="test"><input id="test-input" value="" type="text"/><div id="first-name"></div><div id="last-name"></div></div>',
         viewTmpl = '<div id="test"><div data-thumbs-view="SubView"></div></div>',
@@ -9,8 +9,8 @@ describe("thumbs.View subview", function () {
         requireMock = null;
 
 
-    var TestModel = thumbs.Model.extend({});
-    var SubView = thumbs.TemplateView.extend({
+    var TestModel = Thumbs.Model.extend({});
+    var SubView = Thumbs.TemplateView.extend({
         value: null,
         template: subTmpl,
         initialize: function (options) {
@@ -28,7 +28,7 @@ describe("thumbs.View subview", function () {
             return this;
         }
     });
-    var View = thumbs.View.extend({
+    var View = Thumbs.View.extend({
         SubView: SubView,
         render: function (tmpl) {
             this.$el.html(tmpl);

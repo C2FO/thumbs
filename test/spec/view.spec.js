@@ -1,7 +1,7 @@
-describe("thumbs.View", function () {
+describe("Thumbs.View", function () {
 
 
-    var View = thumbs.View.extend({
+    var View = Thumbs.View.extend({
         template: null,
 
         initialize: function (options) {

@@ -1,5 +1,5 @@
-describe("thumbs.View Monitor", function () {
-    var View = thumbs.View.extend({
+describe("Thumbs.View Monitor", function () {
+    var View = Thumbs.View.extend({
         template: null,
 
         initialize: function (options) {
@@ -35,7 +35,7 @@ describe("thumbs.View Monitor", function () {
         });
 
 
-        var TestModel = thumbs.Model.extend({});
+        var TestModel = Thumbs.Model.extend({});
 
         beforeEach(function () {
             this.model = new TestModel({firstName: "Bob", lastName: "Yukon"});
@@ -87,7 +87,7 @@ describe("thumbs.View Monitor", function () {
         });
 
 
-        var TestModel = thumbs.Model.extend({});
+        var TestModel = Thumbs.Model.extend({});
 
         beforeEach(function () {
             this.model = new TestModel({isChecked: true, lastName: "Yukon"});
@@ -136,7 +136,7 @@ describe("thumbs.View Monitor", function () {
             });
 
 
-            var TestModel = thumbs.Model.extend({});
+            var TestModel = Thumbs.Model.extend({});
 
             beforeEach(function () {
                 this.model = new TestModel({isChecked: true, lastName: "Yukon"});
@@ -178,7 +178,7 @@ describe("thumbs.View Monitor", function () {
             });
 
 
-            var TestModel = thumbs.Model.extend({});
+            var TestModel = Thumbs.Model.extend({});
 
             beforeEach(function () {
                 this.model = new TestModel({isChecked: true, lastName: "Yukon"});
@@ -219,7 +219,7 @@ describe("thumbs.View Monitor", function () {
             });
 
 
-            var TestModel = thumbs.Model.extend({});
+            var TestModel = Thumbs.Model.extend({});
 
             beforeEach(function () {
                 this.model = new TestModel({isChecked: true, lastName: "Yukon"});
@@ -253,7 +253,7 @@ describe("thumbs.View Monitor", function () {
             });
 
 
-            var TestModel = thumbs.Model.extend({});
+            var TestModel = Thumbs.Model.extend({});
 
             beforeEach(function () {
                 this.model = new TestModel({isChecked: true, lastName: "Yukon"});
@@ -262,19 +262,19 @@ describe("thumbs.View Monitor", function () {
 
             it("should set initial values", function () {
                 this.view.render();
-                expect(thumbs.viewByNode(this.view.$('[data-thumbs-bind="lastName:lastName"]').get(0)).lastName).toEqual("Yukon");
+                expect(Thumbs.viewByNode(this.view.$('[data-thumbs-bind="lastName:lastName"]').get(0)).lastName).toEqual("Yukon");
             });
 
             it("should update values", function () {
                 this.view.render();
                 this.model.set({isChecked: false, lastName: "YUKON"});
-                expect(thumbs.viewByNode(this.view.$('[data-thumbs-bind="lastName:lastName"]').get(0)).lastName).toEqual("YUKON");
+                expect(Thumbs.viewByNode(this.view.$('[data-thumbs-bind="lastName:lastName"]').get(0)).lastName).toEqual("YUKON");
             });
 
             it("should update values", function () {
                 this.view.render();
                 this.model.set({isChecked: false, lastName: null});
-                expect(thumbs.viewByNode(this.view.$('[data-thumbs-bind="lastName:lastName"]').get(0)).lastName).toEqual("");
+                expect(Thumbs.viewByNode(this.view.$('[data-thumbs-bind="lastName:lastName"]').get(0)).lastName).toEqual("");
             });
         });
 
@@ -287,7 +287,7 @@ describe("thumbs.View Monitor", function () {
             });
 
 
-            var TestModel = thumbs.Model.extend({});
+            var TestModel = Thumbs.Model.extend({});
 
             beforeEach(function () {
                 this.model = new TestModel({isChecked: true, lastName: "Yukon"});
@@ -313,7 +313,7 @@ describe("thumbs.View Monitor", function () {
         });
 
 
-        var TestModel = thumbs.Model.extend({});
+        var TestModel = Thumbs.Model.extend({});
 
         beforeEach(function () {
             this.model = new TestModel({isChecked: true, lastName: "Yukon"});
@@ -349,7 +349,7 @@ describe("thumbs.View Monitor", function () {
         });
 
 
-        var TestModel = thumbs.Model.extend({});
+        var TestModel = Thumbs.Model.extend({});
 
         beforeEach(function () {
             this.model = new TestModel({isChecked: true, lastName: "Yukon"});
@@ -368,7 +368,7 @@ describe("thumbs.View Monitor", function () {
             destroySpy = sinon.spy(),
             syncSpy = sinon.spy(),
             errorSpy = sinon.spy(),
-            TestView = thumbs.View.extend({
+            TestView = Thumbs.View.extend({
                 template: '<div data-thumbs-el data-thumbs-bind-event="change:modelChange destroy:modelDestroy sync:modelSync error:modelError">' +
                     '   <button data-thumbs-bind="val:lastName"></button>' +
                     '</div>',
@@ -383,7 +383,7 @@ describe("thumbs.View Monitor", function () {
             });
 
 
-        var TestModel = thumbs.Model.extend({});
+        var TestModel = Thumbs.Model.extend({});
 
         beforeEach(function () {
             this.model = new TestModel({isChecked: true, lastName: "Yukon"});

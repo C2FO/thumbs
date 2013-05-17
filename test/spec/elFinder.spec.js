@@ -1,8 +1,8 @@
-describe("thumbs.View elFinder", function () {
+describe("Thumbs.View elFinder", function () {
     var tmpl, View;
     beforeEach(function () {
         tmpl = '<li data-thumbs-el><input type="text" data-thumbs-id="foo" val="Test Input"/></li>';
-        View = thumbs.View.extend({
+        View = Thumbs.View.extend({
             render: function () {
                 this.$el.append($(tmpl));
                 this._super('render', arguments);
