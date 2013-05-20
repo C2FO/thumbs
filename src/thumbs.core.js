@@ -130,6 +130,9 @@
             })()
         };
 
+        // add Backbone.Events to the Thumbs namespace
+        Thumbs.Events = Backbone.Events;
+
         // @include ./thumbs.class.js
         // @include ./thumbs.model.js
         // @include ./thumbs.collection.js

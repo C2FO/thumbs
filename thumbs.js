@@ -1,4 +1,4 @@
-// Thumbs.js 0.1.0
+// Thumbs.js 0.1.1
 //
 // Copyright (c) 2013 Pollenware.
 // Distributed under MIT license.
@@ -135,6 +135,9 @@
                 };
             })()
         };
+
+        // add Backbone.Events to the Thumbs namespace
+        Thumbs.Events = Backbone.Events;
 
         Thumbs.Class = (function () {
 
