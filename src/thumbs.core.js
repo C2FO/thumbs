@@ -133,6 +133,9 @@
         // add Backbone.Events to the Thumbs namespace
         Thumbs.Events = Backbone.Events;
 
+        // add Backbone.sync to Thumbs namespace
+        Thumbs.sync = Backbone.sync;
+
         // @include ./thumbs.class.js
         // @include ./thumbs.model.js
         // @include ./thumbs.collection.js
