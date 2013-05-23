@@ -1,4 +1,4 @@
-// Thumbs.js 0.1.2
+// Thumbs.js 0.1.3
 //
 // Copyright (c) 2013 Pollenware.
 // Distributed under MIT license.
@@ -736,7 +736,7 @@
         initialize: function (options) {
             this._super("initialize", arguments);
             if (!this.templater) {
-                this.templater = thumbs.templater();
+                this.templater = Thumbs.templater();
             }
             if (this.template) {
                 this._template = this.templater(this.template);
