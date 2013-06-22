@@ -1,5 +1,5 @@
 Thumbs.History = (function () {
-    var History = Backbone.History.extend({
+    var History = Backbone.History.extend(Thumbs._super).extend({
         notFoundRedirect: null,
 
         checkPreRouteHandler: function (handlers, path, fragment) {
