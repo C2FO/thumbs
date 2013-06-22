@@ -139,6 +139,7 @@
         // @include ./thumbs.class.js
         // @include ./thumbs.model.js
         // @include ./thumbs.collection.js
+        // @include ./thumbs.history.js
         // @include ./thumbs.router.js
         // @include ./thumbs.view.js
         // @include ./thumbs.templateView.js
