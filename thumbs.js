@@ -273,8 +273,8 @@
     var viewRegistry = Thumbs.viewRegistry;
 
     function splitParts(m, cb) {
-        return _.each(m.split(thumbs.MULTI_ARG_TOKEN), function (m) {
-            cb(_.map(m.split(thumbs.KEY_VALUE_TOKEN), function (m) {
+        return _.each(m.split(Thumbs.MULTI_ARG_TOKEN), function (m) {
+            cb(_.map(m.split(Thumbs.KEY_VALUE_TOKEN), function (m) {
                 return $.trim(m);
             }));
         });
