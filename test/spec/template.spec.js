@@ -17,6 +17,27 @@ describe("Thumbs.TemplatingView", function () {
         });
     });
 
+    describe("passing a compiled template", function () {
+        it ("should accept a compiled template function", function () {
+            var tmpl = _.template('<div id="foo"><div class="bar"></span></div>'),
+                TestView = Thumbs.TemplateView.extend({
+                    template: tmpl
+                });
+
+            var view = new TestView();
+            expect(typeof view.template).toBe('function');
+            view.render();
+            expect(view.$el).toContain('#foo');
+        });
+
+        it("throws an error if the template is of an invalid type", function () {
+            var TestView = Thumbs.TemplateView.extend({
+                template: {invalid: true}
+            });
+            expect(function () {new TestView();}).toThrow();
+        });
+    });
+
     describe('templating data with interpolation', function () {
 
         var TestView = Thumbs.TemplateView.extend({

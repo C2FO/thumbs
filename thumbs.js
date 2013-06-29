@@ -1,4 +1,4 @@
-// Thumbs.js 0.1.5
+// Thumbs.js 0.1.7
 //
 // Copyright (c) 2013 Pollenware.
 // Distributed under MIT license.
@@ -778,8 +778,13 @@
             if (!this.templater) {
                 this.templater = Thumbs.templater();
             }
-            if (this.template) {
+
+            if (_.isString(this.template)) {
                 this._template = this.templater(this.template);
+            } else if (_.isFunction(this.template)) {
+                this._template = this.template;
+            } else {
+                throw "Unexpected template property type";
             }
         },
 

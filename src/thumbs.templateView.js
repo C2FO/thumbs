@@ -25,8 +25,13 @@ Thumbs.TemplateView = (function () {
             if (!this.templater) {
                 this.templater = Thumbs.templater();
             }
-            if (this.template) {
+
+            if (_.isString(this.template)) {
                 this._template = this.templater(this.template);
+            } else if (_.isFunction(this.template)) {
+                this._template = this.template;
+            } else {
+                throw "Unexpected template property type";
             }
         },
 
