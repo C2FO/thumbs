@@ -59,7 +59,9 @@ Thumbs.TemplateView = (function () {
         },
 
         render: function () {
-            return this.renderTemplate()._super("render", arguments);
+            this.renderTemplate()
+                ._super("render", arguments);
+            return this;
         }
     });
 

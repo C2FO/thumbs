@@ -95,7 +95,7 @@ module.exports = function (grunt) {
             }
         },
 
-        clean: ['node_modules'],
+        clean: ['node_modules', "components"],
 
         watch: {
             thumbs: {
