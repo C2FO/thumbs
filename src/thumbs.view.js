@@ -389,8 +389,7 @@ Thumbs.View = (function () {
 
         render: function () {
             // this order matters
-            return this
-                .checkForSubviews()
+            this.checkForSubviews()
                 .checkForEvents()
                 .setupBinders()
                 .checkForIdentifiers()
@@ -398,6 +397,7 @@ Thumbs.View = (function () {
                 .findEl()
                 .assign(this._subviews)
                 ._super('render', arguments);
+            return this;
         },
 
         assign: function (selector, view) {
@@ -439,7 +439,8 @@ Thumbs.View = (function () {
                 var args = this._parseViewArgs($el.data('thumbs-args'));
                 _.extend(args, { el: el});
                 var view = new SubView(args);
-                this.__subviews.push(view.render());
+                view.render();
+                this.__subviews.push(view);
                 if (!!(id = $el.data('thumbs-id'))) {
                     this["$" + id] = view;
                 }
@@ -473,7 +474,8 @@ Thumbs.View = (function () {
             this.removeIdentifiers();
             this.__monitors = {};
             this.__events = {};
-            return this._super('remove', arguments);
+            this._super('remove', arguments);
+            return this;
         }
     });
 
