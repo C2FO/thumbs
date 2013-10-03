@@ -1,4 +1,4 @@
-// Thumbs.js 0.1.7
+// Thumbs.js 0.1.8
 //
 // Copyright (c) 2013 Pollenware.
 // Distributed under MIT license.
