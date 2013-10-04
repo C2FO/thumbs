@@ -1,4 +1,4 @@
-// Thumbs.js 0.1.7
+// Thumbs.js 0.1.8
 //
 // Copyright (c) 2013 Pollenware.
 // Distributed under MIT license.
@@ -660,8 +660,7 @@
 
         render: function () {
             // this order matters
-            return this
-                .checkForSubviews()
+            this.checkForSubviews()
                 .checkForEvents()
                 .setupBinders()
                 .checkForIdentifiers()
@@ -669,6 +668,7 @@
                 .findEl()
                 .assign(this._subviews)
                 ._super('render', arguments);
+            return this;
         },
 
         assign: function (selector, view) {
@@ -710,7 +710,8 @@
                 var args = this._parseViewArgs($el.data('thumbs-args'));
                 _.extend(args, { el: el});
                 var view = new SubView(args);
-                this.__subviews.push(view.render());
+                view.render();
+                this.__subviews.push(view);
                 if (!!(id = $el.data('thumbs-id'))) {
                     this["$" + id] = view;
                 }
@@ -744,7 +745,8 @@
             this.removeIdentifiers();
             this.__monitors = {};
             this.__events = {};
-            return this._super('remove', arguments);
+            this._super('remove', arguments);
+            return this;
         }
     });
 
@@ -812,7 +814,9 @@
         },
 
         render: function () {
-            return this.renderTemplate()._super("render", arguments);
+            this.renderTemplate()
+                ._super("render", arguments);
+            return this;
         }
     });
 
