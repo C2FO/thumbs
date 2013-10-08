@@ -14,6 +14,7 @@ Thumbs.View = (function () {
         if ((thumbsId = $el.attr("thumbs-id"))) {
             $el = viewRegistry.get(thumbsId) || $el;
         }
+
         if (type) {
             //if we have a type then we can try to look up the type function on the element
             if ("function" === typeof $el[type]) {
@@ -94,9 +95,7 @@ Thumbs.View = (function () {
         },
 
         setElData: function (el, data, type, attribute) {
-            this.checkFormatting(el, data, type);
-
-            return this;
+            return this.checkFormatting(el, data, type);
         },
 
         setupType: function (m, el, type) {
@@ -104,7 +103,6 @@ Thumbs.View = (function () {
             if (!(m in monitors)) {
                 monitors[m] = [];
             }
-
             monitors[m].push(_.bind(function (data) {
                 if ("function" === typeof el) {
                     el(data, m);
@@ -168,25 +166,28 @@ Thumbs.View = (function () {
             var setupBind = this.setupBind,
                 setupClassBind = this.setupClassBind,
                 setupEventBind = this.setupEventBind;
-            this.$("[data-thumbs-bind]").each(function () {
+            this.$("[data-thumbs-bind]").not("[data-thumbs-view]").each(function () {
                 setupBind(this);
             });
-            this.$("[data-thumbs-bind-event]").each(function () {
+            this.$("[data-thumbs-bind-event]").not("[data-thumbs-view]").each(function () {
                 setupEventBind(this);
             });
 
-            this.$("[data-thumbs-bind-class]").each(function () {
+            this.$("[data-thumbs-bind-class]").not("[data-thumbs-view]").each(function () {
                 setupClassBind(this);
             });
-            if (this.$el.is("[data-thumbs-bind]")) {
-                setupBind(this.el);
+            if(!this.$el.is("[data-thumbs-view]")){
+                if (this.$el.is("[data-thumbs-bind]")) {
+                    setupBind(this.el);
+                }
+                if (this.$el.is("[data-thumbs-bind-class]")) {
+                    setupClassBind(this.el);
+                }
+                if (this.$el.is("[data-thumbs-bind-event]")) {
+                    setupEventBind(this.el);
+                }
             }
-            if (this.$el.is("[data-thumbs-bind-class]")) {
-                setupClassBind(this.el);
-            }
-            if (this.$el.is("[data-thumbs-bind-event]")) {
-                setupEventBind(this.el);
-            }
+
             return this;
         },
 
@@ -276,6 +277,23 @@ Thumbs.View = (function () {
             return this;
         },
 
+        updateIdentifiers: function() {
+            var self = this;
+            //loop through identifiers and update any view references that have not been set
+            //this is necessary after nested views because we don't know how deep the view will be nested
+            //when the subview is done rendering and the enclosing view will not be the parent view trying
+            //to reference it
+            _.each(self.__identifiers, function(id) {
+                $(self[id]).attr("thumbs-id");
+                var view = viewRegistry.get($(self[id]).attr("thumbs-id"));
+                if(view){
+                    self['$' + id] = view;
+                }
+
+            });
+            return this;
+        },
+
         findEl: function () {
             var setElement = _.bind(this.setElement, this);
             //find an elements that are marked with data-thumbs-el
@@ -318,7 +336,7 @@ Thumbs.View = (function () {
 
         renderFormatters: function () {
             var self = this;
-            this.$('[data-thumbs-format]').each(function () {
+            this.$('[data-thumbs-format]').not("[data-thumbs-view]").each(function () {
                 self.checkFormatting(this);
             });
 
@@ -368,32 +386,39 @@ Thumbs.View = (function () {
         checkForEvents: function () {
             var self = this;
             this.events = this.events || {};
-            this.$('[data-thumbs-delegate]').each(function () {
-                var thumbsView = viewRegistry.get($(this).attr("thumbs-id"));
-                if (viewRegistry.getEnclosingView(this) === self) {
-                    var $this = $(this), id = _.uniqueId('thumbs_');
-                    $this.addClass(id);
-                    splitParts($this.data('thumbs-delegate'), function (data) {
-                        var event = data[0], func = data[1];
-                        self.events[event + ' .' + id] = func;
-                        if (thumbsView) {
-                            //Listen to event if this is a thumbs-view
-                            self.listenTo(thumbsView, event, self[func]);
-                        }
-                    });
-                }
+
+            this.$('[data-thumbs-delegate]').each(function() {
+                self._bindEvents(this);
             });
             this.delegateEvents();
             return this;
         },
 
+        _bindEvents: function(element){
+            var self = this,
+                thumbsView = viewRegistry.get($(element).attr("thumbs-id"));
+            if (viewRegistry.getEnclosingView(element) === self) {
+                var $element = $(element), id = _.uniqueId('thumbs_');
+                $element.addClass(id);
+                splitParts($element.data('thumbs-delegate'), function (data) {
+                    var event = data[0], func = data[1];
+                    self.events[event + ' .' + id] = func;
+                    if (thumbsView) {
+                        //Listen to event if this is a thumbs-view
+                        self.listenTo(thumbsView, event, self[func]);
+                    }
+                });
+            }
+        },
+
         render: function () {
             // this order matters
-            this.checkForSubviews()
-                .checkForEvents()
+            this.checkForEvents()
                 .setupBinders()
                 .checkForIdentifiers()
                 .renderFormatters()
+                .checkForSubviews()
+                .updateIdentifiers()
                 .findEl()
                 .assign(this._subviews)
                 ._super('render', arguments);
@@ -455,6 +480,43 @@ Thumbs.View = (function () {
             var self = this;
             this.$('[data-thumbs-view]').each(function () {
                 self.renderSubviewView(this);
+
+                if($(this).is("[data-thumbs-delegate]")){
+                    self._bindEvents(this);
+                }
+
+                self.turnOffModelListeners();
+                if($(this).is("[data-thumbs-bind]")){
+                    self.setupBind(this);
+                }
+
+                if($(this).is("[data-thumbs-bind-event]")){
+                    self.setupEventBind(this);
+                }
+
+                if($(this).is("[data-thumbs-bind-class]")){
+                    self.setupClassBind(this);
+                }
+                if(self.$el.is("[data-thumbs-view]")){
+                    if (self.$el.is("[data-thumbs-bind]")) {
+                        self.setupBind(self.el);
+                    }
+                    if (self.$el.is("[data-thumbs-bind-class]")) {
+                        self.setupClassBind(self.el);
+                    }
+                    if (self.$el.is("[data-thumbs-bind-event]")) {
+                        self.setupEventBind(self.el);
+                    }
+                }
+                self.turnOnModelListeners();
+
+                if (self.model) {
+                    self.__setValues(self.model.attributes);
+                }
+
+                if($(this).is("[data-thumbs-format]")){
+                    self.checkFormatting(this);
+                }
             });
 
             return this;
