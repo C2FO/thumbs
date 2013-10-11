@@ -123,7 +123,7 @@
 
                     this._superCallObjects[methodName] = parentObject;
 
-                    result = parentObject[methodName].apply(this, args || {});
+                    result = parentObject[methodName].apply(this, args || []);
                     delete this._superCallObjects[methodName];
                     return result;
                 };
