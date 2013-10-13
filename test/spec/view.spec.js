@@ -95,7 +95,6 @@ describe("Thumbs.View", function () {
 
         it("should remove itself from the thumbs registry if the element is removed", function () {
             this.view.remove();
-            this.view.setElement(null);
             expect(thumbs.viewById(this.view.thumbsId)).toBeUndefined();
         });
     });
