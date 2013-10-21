@@ -185,6 +185,9 @@
             var fragment = this.fragment = this.getFragment(fragmentOverride);
             var matched = this.checkPreRouteHandler(this.handlers, 'pre-route_all', fragment);
             if (matched) {
+                matched = this.checkPreRouteHandler(this.handlers, 'pre-route_', fragment);
+            }
+            if (matched) {
                 matched = this._super('loadUrl', arguments);
                 if (!matched) {
                     if (this.options.notFoundRedirect) {
