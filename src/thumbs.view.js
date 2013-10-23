@@ -412,6 +412,9 @@ Thumbs.View = (function () {
         },
 
         render: function () {
+            if(!viewRegistry.get(this.thumbsId)){
+                viewRegistry.add(this);
+            }
             // this order matters
             this.checkForEvents()
                 .setupBinders()
@@ -534,6 +537,8 @@ Thumbs.View = (function () {
             this.removeSubViews();
             this.turnOffModelListeners();
             this.removeIdentifiers();
+            this.undelegateEvents();
+            viewRegistry.remove(this.thumbsId);
             this.__monitors = {};
             this.__events = {};
             this._super('remove', arguments);
