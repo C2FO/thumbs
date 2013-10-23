@@ -415,8 +415,6 @@ describe("Thumbs.View Monitor", function () {
             expect(syncSpy).toHaveBeenCalledOnce();
             expect(errorSpy).toHaveBeenCalledOnce();
             expect(destroySpy).toHaveBeenCalledOnce();
-
-
         });
 
     });
