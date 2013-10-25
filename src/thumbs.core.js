@@ -89,7 +89,7 @@
         Thumbs.viewById = Thumbs.viewRegistry.get;
 
 
-        Thumbs.extend = function(prototype, staticProps) {
+        Thumbs.extend = function (prototype, staticProps) {
             var child = _extend.apply(this, arguments);
             child.prototype.__getConstructor = function () {
                 return child;
@@ -112,18 +112,37 @@
                     return object;
                 }
 
-                return function(methodName, args) {
+                return function (methodName, args) {
+                    args = args || [];
                     if (!this._superCallObjects) {
                         this._superCallObjects = {};
                     }
 
                     var result,
-                    currentObject = this._superCallObjects[methodName] || this,
-                    parentObject = findSuper(methodName, currentObject);
+                        currentObject = this._superCallObjects[methodName] || this,
+                        parentObject = findSuper(methodName, currentObject);
 
                     this._superCallObjects[methodName] = parentObject;
-
-                    result = parentObject[methodName].apply(this, args || []);
+                    var m = parentObject[methodName];
+                    switch (args.length) {
+                    case 0:
+                        result = m.call(this);
+                        break;
+                    case 1:
+                        result = m.call(this, args[0]);
+                        break;
+                    case 2:
+                        result = m.call(this, args[0], args[1]);
+                        break;
+                    case 3:
+                        result = m.call(this, args[0], args[1], args[2]);
+                        break;
+                    case 4:
+                        result = m.call(this, args[0], args[1], args[2], args[3]);
+                        break;
+                    default:
+                        result = m.apply(this, args);
+                    }
                     delete this._superCallObjects[methodName];
                     return result;
                 };
@@ -153,7 +172,7 @@
             backbone = require('backbone');
 
         module.exports = defineThumbs(backbone, underscore);
-    } else  if (typeof define === 'function' && define.amd) {
+    } else if (typeof define === 'function' && define.amd) {
         define(['underscore', 'backbone'], function (_, Backbone) {
             return defineThumbs(Backbone, _);
         });
