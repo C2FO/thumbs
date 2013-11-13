@@ -384,13 +384,17 @@ Thumbs.View = (function () {
         },
 
         checkForEvents: function () {
-            var self = this;
+            var self = this,
+                hasEvents = false;
             this.events = this.events || {};
 
             this.$('[data-thumbs-delegate]').each(function() {
+                hasEvents = true;
                 self._bindEvents(this);
             });
-            this.delegateEvents();
+            if (hasEvents) {
+                this.delegateEvents();
+            }
             return this;
         },
 
