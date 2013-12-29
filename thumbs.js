@@ -682,8 +682,7 @@
             this.events = this.events || {};
 
             this.$('[data-thumbs-delegate]').each(function() {
-                hasEvents = true;
-                self._bindEvents(this);
+                hasEvents = self._bindEvents(this) || hasEvents;
             });
             if (hasEvents) {
                 this.delegateEvents();
@@ -693,8 +692,10 @@
 
         _bindEvents: function(element){
             var self = this,
+                bound = false,
                 thumbsView = viewRegistry.get($(element).attr("thumbs-id"));
             if (viewRegistry.getEnclosingView(element) === self) {
+                bound = true;
                 var $element = $(element), id = _.uniqueId('thumbs_');
                 $element.addClass(id);
                 splitParts($element.data('thumbs-delegate'), function (data) {
@@ -706,6 +707,7 @@
                     }
                 });
             }
+            return bound;
         },
 
         render: function () {
