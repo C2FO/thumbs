@@ -47,7 +47,7 @@ $(function () {
         model: Todo,
 
         // Save all of the todo items under the `"todos-thumbs"` namespace.
-        localStorage: new thumbs.LocalStorage("todos-thumbs"),
+        localStorage: new Backbone.LocalStorage("todos-thumbs"),
 
         // Filter down the list of all todo items that are finished.
         done: function () {

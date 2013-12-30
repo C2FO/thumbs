@@ -368,10 +368,11 @@ describe("Thumbs.View Monitor", function () {
             destroySpy = sinon.spy(),
             syncSpy = sinon.spy(),
             errorSpy = sinon.spy(),
-            TestView = Thumbs.View.extend({
-                template: '<div data-thumbs-el data-thumbs-bind-event="change:modelChange destroy:modelDestroy sync:modelSync error:modelError">' +
+            html = '<div data-thumbs-el data-thumbs-bind-event="change:modelChange destroy:modelDestroy sync:modelSync error:modelError">' +
                     '   <button data-thumbs-bind="val:lastName"></button>' +
-                    '</div>',
+                    '</div>';
+            TestView = Thumbs.View.extend({
+                template: html,
                 render: function () {
                     this.$el.html(this.template);
                     return this._super('render', arguments);
@@ -415,6 +416,20 @@ describe("Thumbs.View Monitor", function () {
             expect(syncSpy).toHaveBeenCalledOnce();
             expect(errorSpy).toHaveBeenCalledOnce();
             expect(destroySpy).toHaveBeenCalledOnce();
+        });
+
+        it("should recognize events when put on the root element itself", function () {
+            var TestView2 = Thumbs.View.extend({
+                modelChange: changeSpy,
+                modelDestroy: destroySpy,
+                modelSync: syncSpy,
+                modelError: errorSpy
+            }),
+            view2 = new TestView2({el:$(html), model: this.model});
+
+            view2.render();
+            expect(view2.__events).toBeDefined();
+            expect(_.values(view2.__events).length).toBe(4);
         });
 
     });

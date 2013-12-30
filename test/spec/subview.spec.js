@@ -70,12 +70,12 @@ describe("Thumbs.View subview", function () {
     });
 
     it("add custom event to view", function () {
-        expect(view._listeners).not.toBeDefined();
+        expect(view._listeningTo).not.toBeDefined();
         view.render(customEventTmpl);
-        expect(view._listeners).toBeDefined();
-        expect(_.values(view._listeners).length).toBe(1);
+        expect(view._listeningTo).toBeDefined();
+        expect(_.values(view._listeningTo).length).toBe(1);
         view.remove();
-        expect(_.values(view._listeners).length).toBe(0);
+        expect(_.values(view._listeningTo).length).toBe(0);
     });
 
     it("should call custom events", function () {
