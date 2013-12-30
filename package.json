@@ -4,6 +4,9 @@
   "private": true,
   "author": "Pollenware",
   "license": "MIT",
+  "scripts": {
+    "test" : "grunt test"
+  },
   "dependencies": {},
   "devDependencies": {
     "jshint": "~1.0.0",
