@@ -1,4 +1,4 @@
-// Thumbs.js 0.1.8
+// Thumbs.js 0.2.0
 //
 // Copyright (c) 2013 Pollenware.
 // Distributed under MIT license.
@@ -39,7 +39,7 @@
                         }
                         node = node.parentNode;
                     }
-                    return null;
+                    return viewRegistry._hash[searchNode.getAttribute("thumbs-id")];
                 },
                 remove: function (id) {
                     if (_hash.hasOwnProperty(id)) {

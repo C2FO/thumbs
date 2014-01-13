@@ -33,7 +33,7 @@
                         }
                         node = node.parentNode;
                     }
-                    return null;
+                    return viewRegistry._hash[searchNode.getAttribute("thumbs-id")];
                 },
                 remove: function (id) {
                     if (_hash.hasOwnProperty(id)) {

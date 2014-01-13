@@ -41,7 +41,7 @@ describe("Thumbs.core", function () {
         it("should continue to work when _.bind is used", function () {
             var Cat = Animal.extend({
                 initialize: function () {
-                    _.bindAll(this);
+                    _.bindAll(this, "greet");
                 },
 
                 greet: function (name) {

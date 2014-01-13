@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/C2FO/thumbs.png?branch=master)](https://travis-ci.org/C2FO/thumbs)
+
 # Thumbs
 
 `thumbs` is a library built on top of [`backbone`](http://backbonejs.org/) that provides many new features to help reduce the amount of "boiler-plate" required when building backbone applications.
