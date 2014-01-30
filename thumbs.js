@@ -1,4 +1,4 @@
-// Thumbs.js 0.2.1
+// Thumbs.js 0.2.2
 //
 // Copyright (c) 2014 Pollenware.
 // Distributed under MIT license.
@@ -680,17 +680,17 @@
         checkForEvents: function () {
             var self = this;
 
-            this.$('[data-thumbs-delegate]').each(function() {
+            this.$('[data-thumbs-delegate]').not("[data-thumbs-view]").each(function () {
                 self._bindEvents(this);
             });
             return this;
         },
 
-        _bindEvents: function(element){
+        _bindEvents: function (element, subView) {
             var self = this,
                 bound = false,
-                thumbsView = viewRegistry.get($(element).attr("thumbs-id"));
-            if (viewRegistry.getEnclosingView(element) === self) {
+                thumbsView = subView || viewRegistry.get($(element).attr("thumbs-id"));
+            if (subView || viewRegistry.getEnclosingView(element) === self) {
                 bound = true;
                 var $element = $(element), id = _.uniqueId('thumbs_');
                 $element.addClass(id);
@@ -707,7 +707,7 @@
         },
 
         render: function () {
-            if(!viewRegistry.get(this.thumbsId)){
+            if (!viewRegistry.get(this.thumbsId)) {
                 viewRegistry.add(this);
             }
             // this order matters
@@ -720,7 +720,6 @@
                 .findEl()
                 .assign(this._subviews)
                 ._super('render', arguments);
-
             if (!_.isEmpty(this.events)) {
                 this.delegateEvents();
             }
@@ -759,13 +758,13 @@
         },
 
         renderSubviewView: function (el) {
-            var SubView = null, id,
+            var SubView = null, id, view,
                 $el = $(el),
                 v = $el.data('thumbs-view');
             if (v && (SubView = this[v])) {
                 var args = this._parseViewArgs($el.data('thumbs-args'));
                 _.extend(args, { el: el});
-                var view = new SubView(args);
+                view = new SubView(args);
                 view.render();
                 this.__subviews.push(view);
                 if (!!(id = $el.data('thumbs-id'))) {
@@ -774,32 +773,31 @@
             } else {
                 throw new Error("Unable to find " + v + " on view");
             }
-            return this;
+            return view;
         },
-
 
         checkForSubviews: function () {
             var self = this;
             this.$('[data-thumbs-view]').each(function () {
-                self.renderSubviewView(this);
+                var subView = self.renderSubviewView(this);
 
-                if($(this).is("[data-thumbs-delegate]")){
-                    self._bindEvents(this);
+                if ($(this).is("[data-thumbs-delegate]")) {
+                    self._bindEvents(this, subView);
                 }
 
                 self.turnOffModelListeners();
-                if($(this).is("[data-thumbs-bind]")){
+                if ($(this).is("[data-thumbs-bind]")) {
                     self.setupBind(this);
                 }
 
-                if($(this).is("[data-thumbs-bind-event]")){
+                if ($(this).is("[data-thumbs-bind-event]")) {
                     self.setupEventBind(this);
                 }
 
-                if($(this).is("[data-thumbs-bind-class]")){
+                if ($(this).is("[data-thumbs-bind-class]")) {
                     self.setupClassBind(this);
                 }
-                if(self.$el.is("[data-thumbs-view]")){
+                if (self.$el.is("[data-thumbs-view]")) {
                     if (self.$el.is("[data-thumbs-bind]")) {
                         self.setupBind(self.el);
                     }
@@ -816,7 +814,7 @@
                     self.__setValues(self.model.attributes);
                 }
 
-                if($(this).is("[data-thumbs-format]")){
+                if ($(this).is("[data-thumbs-format]")) {
                     self.checkFormatting(this);
                 }
             });
