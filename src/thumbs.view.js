@@ -66,6 +66,7 @@ Thumbs.View = (function () {
             this.__identifiers = [];
             this.__monitors = {};
             this.__events = {};
+            this.events = _.clone(this.events || {});
             this._super('initialize', arguments);
             if (this.$el) {
                 this.$el.attr("thumbs-id", this.thumbsId);
@@ -384,16 +385,11 @@ Thumbs.View = (function () {
         },
 
         checkForEvents: function () {
-            var self = this,
-                hasEvents = false;
-            this.events = this.events || {};
+            var self = this;
 
             this.$('[data-thumbs-delegate]').each(function() {
-                hasEvents = self._bindEvents(this) || hasEvents;
+                self._bindEvents(this);
             });
-            if (hasEvents) {
-                this.delegateEvents();
-            }
             return this;
         },
 
@@ -431,6 +427,10 @@ Thumbs.View = (function () {
                 .findEl()
                 .assign(this._subviews)
                 ._super('render', arguments);
+
+            if (!_.isEmpty(this.events)) {
+                this.delegateEvents();
+            }
             return this;
         },
 

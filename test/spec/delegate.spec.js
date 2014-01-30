@@ -21,9 +21,9 @@ describe("Thumbs.View event", function () {
         });
 
         it("adds events set in the template to the events object", function () {
-            expect(view.events).not.toBeDefined();
+            expect(view.events).toEqual({});
             view.render();
-            expect(view.events).toBeDefined();
+            expect(_.keys(view.events).length).toEqual(1);
         });
 
         it("allows events to be set directly on an element", function () {
@@ -55,9 +55,9 @@ describe("Thumbs.View event", function () {
         });
 
         it("adds events set in the template to the events object", function () {
-            expect(view.events).not.toBeDefined();
+            expect(view.events).toEqual({});
             view.render();
-            expect(view.events).toBeDefined();
+            expect(_.keys(view.events).length).toEqual(2);
         });
 
         it("allows events to be set directly on an element", function () {
