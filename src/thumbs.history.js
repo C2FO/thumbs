@@ -1,6 +1,7 @@
 Thumbs.History = (function () {
     var History = Backbone.History.extend(Thumbs._super).extend({
         notFoundRedirect: null,
+        notFoundCallback: null,
 
         checkPreRouteHandler: function (handlers, path, fragment) {
             var result = true;
@@ -27,6 +28,8 @@ Thumbs.History = (function () {
                     if (this.options.notFoundRedirect) {
                         this.navigate(this.options.notFoundRedirect, { trigger: true });
                         matched = true;
+                    } else if (this.options.notFoundCallback) {
+                        matched = this.options.notFoundCallback();
                     }
                 }
             }

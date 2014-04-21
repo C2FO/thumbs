@@ -1,4 +1,4 @@
-// Thumbs.js 0.2.2
+// Thumbs.js 0.2.3
 //
 // Copyright (c) 2014 Pollenware.
 // Distributed under MIT license.
@@ -186,6 +186,7 @@
         Thumbs.History = (function () {
     var History = Backbone.History.extend(Thumbs._super).extend({
         notFoundRedirect: null,
+        notFoundCallback: null,
 
         checkPreRouteHandler: function (handlers, path, fragment) {
             var result = true;
@@ -212,6 +213,8 @@
                     if (this.options.notFoundRedirect) {
                         this.navigate(this.options.notFoundRedirect, { trigger: true });
                         matched = true;
+                    } else if (this.options.notFoundCallback) {
+                        matched = this.options.notFoundCallback();
                     }
                 }
             }

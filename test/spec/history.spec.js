@@ -6,7 +6,8 @@ describe("Thumbs.History", function() {
         routeOne: sinon.stub().returns(true),
         routeTwo: sinon.stub().returns(true),
         routeThree: sinon.stub().returns(true),
-        returnFalse: sinon.stub().returns(false)
+        returnFalse: sinon.stub().returns(false),
+        notFoundCallback: sinon.spy()
     };
 
     var AppRouter = Thumbs.Router.extend({
@@ -41,7 +42,7 @@ describe("Thumbs.History", function() {
         });
 
         try {
-            Thumbs.history.start({silent: true});
+            Thumbs.history.start({silent: true, notFoundCallback:spies.notFoundCallback});
         } catch (ignore) {}
         this.router.navigate("somewhere");
     });
@@ -59,7 +60,7 @@ describe("Thumbs.History", function() {
 
     it('should fire "all" preRoute on "index" route', function() {
         var routerSpy = spies.router,
-            starPreRoute = spies.star, 
+            starPreRoute = spies.star,
             unmatchedPreRoute = spies.routeOne;
 
         this.router.bind('route:index', routerSpy, this);
@@ -148,5 +149,17 @@ describe("Thumbs.History", function() {
         expect(routerSpy).toHaveNotBeenCalled();
 
         expect(unmatchedPreRoute).toHaveNotBeenCalled();
+    });
+
+    it('should not call notFoundCallback if a route is matched', function() {
+        this.router.navigate('unrecognizedRoute', {trigger: true});
+
+        expect(spies.notFoundCallback).toHaveBeenCalledOnce();
+    });
+
+    it('should not call notFoundCallback if a route is matched', function() {
+        this.router.navigate('route/one', {trigger: true});
+
+        expect(spies.notFoundCallback).toHaveNotBeenCalled();
     });
 });
