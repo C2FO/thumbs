@@ -135,7 +135,7 @@ Thumbs.View = (function () {
                     if (mParts.length === 2) {
                         var clazz = mParts[0];
                         setupType(mParts[1], function (data) {
-                            $el.toggleClass(clazz, data);
+                            $el.toggleClass(clazz, !!data);
                         });
                     } else {
                         throw new TypeError("Invalid data-thumbs-bind-class definition");
