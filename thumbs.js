@@ -1,4 +1,4 @@
-// Thumbs.js 0.2.3
+// Thumbs.js 0.2.4
 //
 // Copyright (c) 2014 Pollenware.
 // Distributed under MIT license.
@@ -431,7 +431,7 @@
                     if (mParts.length === 2) {
                         var clazz = mParts[0];
                         setupType(mParts[1], function (data) {
-                            $el.toggleClass(clazz, data);
+                            $el.toggleClass(clazz, !!data);
                         });
                     } else {
                         throw new TypeError("Invalid data-thumbs-bind-class definition");

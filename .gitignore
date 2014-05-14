@@ -8,3 +8,4 @@ dist/
 components/
 .grunt/
 _SpecRunner.html
+atlassian-ide-plugin.xml

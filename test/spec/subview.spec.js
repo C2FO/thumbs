@@ -35,7 +35,7 @@ describe("Thumbs.View subview", function () {
             this._super('render', arguments);
             return this;
         },
-        test:spy
+        test: spy
     });
 
     beforeEach(function () {
