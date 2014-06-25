@@ -33,7 +33,7 @@ module.exports = function (grunt) {
                     'test/helpers.js'
                 ],
                 vendor: [
-                    'components/jquery/jquery.js',
+                    'components/jquery/dist/jquery.js',
                     'components/underscore/underscore.js',
                     'components/backbone/backbone.js'
                 ]
