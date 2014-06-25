@@ -1,6 +1,6 @@
 {
   "name": "thumbs",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "main": "thumbs.js",
   "author": "Pollenware",
   "ignore": [
@@ -9,9 +9,9 @@
     "components"
   ],
   "dependencies": {
-    "jquery": "~1.8.3",
-    "backbone": "1.1.0",
-    "underscore": "~1.5.2"
+    "jquery": "~1.11.1",
+    "backbone": "1.1.2",
+    "underscore": "~1.6.0"
   },
   "devDependencies": {
     "sinon": "http://sinonjs.org/releases/sinon-1.5.2.js",

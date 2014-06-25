@@ -67,7 +67,7 @@ describe("Thumbs.History", function() {
         this.router.navigate('', {trigger: true});
 
         expect(routerSpy).toHaveBeenCalledOnce();
-        expect(routerSpy).toHaveBeenCalledWithExactly();
+        expect(routerSpy).toHaveBeenCalledWith(null);
 
         expect(starPreRoute).toHaveBeenCalledOnce();
         expect(starPreRoute).toHaveBeenCalledWithExactly();
@@ -86,7 +86,7 @@ describe("Thumbs.History", function() {
         this.router.navigate('route/one', {trigger: true});
 
         expect(routerSpy).toHaveBeenCalledOnce();
-        expect(routerSpy).toHaveBeenCalledWithExactly();
+        expect(routerSpy).toHaveBeenCalledWithExactly(null);
 
         expect(starPreRoute).toHaveBeenCalledOnce();
         expect(starPreRoute).toHaveBeenCalledWithExactly();
@@ -111,7 +111,7 @@ describe("Thumbs.History", function() {
         this.router.navigate('route2/12/34', {trigger: true});
 
         expect(routerSpy).toHaveBeenCalledOnce();
-        expect(routerSpy).toHaveBeenCalledWithExactly("12", "34");
+        expect(routerSpy).toHaveBeenCalledWithExactly('12', '34', null);
 
         expect(starPreRoute).toHaveBeenCalledOnce();
         expect(starPreRoute).toHaveBeenCalledWithExactly();
@@ -127,6 +127,16 @@ describe("Thumbs.History", function() {
         expect(specificPreRoute2.calledBefore(routerSpy)).toBe(true);
 
         expect(unmatchedPreRoute).toHaveNotBeenCalled();
+    });
+
+    it('should pass query param in to the handler as the last argument', function() {
+        var routerSpy = spies.router;
+
+        this.router.bind('route:routeTwo', routerSpy, this);
+        this.router.navigate('route2/12/34?query', {trigger: true});
+
+        expect(routerSpy).toHaveBeenCalledOnce();
+        expect(routerSpy).toHaveBeenCalledWithExactly('12', '34', 'query');
     });
 
     it('should stop navigation if preRoute returns "false"', function() {
