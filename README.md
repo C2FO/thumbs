@@ -2,7 +2,7 @@
 
 # Thumbs
 
-`thumbs` is a library built on top of [`backbone`](http://backbonejs.org/) that provides many new features to help reduce the amount of "boiler-plate" required when building backbone applications.
+`thumbs` is a library built on top of [`backbone`](http://backbonejs.org/) that provides many new features to help reduce the amount of boilerplate required when building backbone applications.
 
 ## Installation
 
@@ -18,9 +18,9 @@ Or [download the source](https://raw.github.com/C2FO/thumbs/master/thumbs.js) ([
 
 ### thumbs.Class
 
-`thumbs` exposes a `Class` constructor that enables the creation of objects that are not a `View` or `Model`.
+`thumbs` exposes a `Class` constructor to enable the creation of objects that are not a `View` or `Model`.
 
-For example you could use `thumbs.Class` to create a `Poller`.
+For example, you could use `thumbs.Class` to create a `Poller`.
 
 
 ```javascript
@@ -68,9 +68,9 @@ For example you could use `thumbs.Class` to create a `Poller`.
 
 ###`_super(methodName, arguments)`
 
-`thumbs` provides a `_super` method that allows you to call the inherited methods. This makes building subclassing easier.
+`thumbs` provides a `_super` method for calling the inherited methods, making subclassing easier.
 
-The `_super` method is added to
+The `_super` method is added to:
 
  * `thumbs.Collection`
  * `thumbs.Model`
@@ -94,17 +94,17 @@ var myView = thumbs.View.extend({
 
 ###`thumbs.View`
 
-`thumbs` builds on top of `bacbone.View` by providing new functionality while still maintiaing full compatibilty with normal `backbone.View`s.
+`thumbs` builds on top of `backbone.View` by providing new functionality while still maintaining full compatibilty.
 
 ### `data-thumbs-*`
 
-Many of the features that `thumbs.View` implements is the ability to add `data` attributes to your `el` to specify different behavior reducing the amount of boiler plate required to create a view.
+`thumbs.View` implements the ability to add `data` attributes to your `el` to specify behavior, reducing the amount of boilerplate required to create a view.
 
 **`data-thumbs-id`**
 
 The `data-thumbs-id` attribute allows you to specify elements that you want as a property on a view.
 
-Assume you have the following in your views dom.
+Assume you have the following in your view's DOM.
 
 
 ```html
@@ -114,7 +114,7 @@ Assume you have the following in your views dom.
 
 ```
 
-You could then reference that div by either the `$firstName` to get the wrapped element or by `firstName` to get the actual dom node.
+You could then reference that div by either `$firstName` to get the wrapped element or by `firstName` to get the actual DOM node.
 
 ```javascript
 var MyView = thumbs.View.extend({
@@ -150,7 +150,7 @@ var MyView = thumbs.View.extend(function(){
 
 ```
 
-To bind to multiple events you can separate your events by a space.
+To bind to multiple events, you can separate your events by a space.
 
 
 ```html
@@ -179,9 +179,7 @@ var MyView = thumbs.View.extend(function(){
 
 The `data-thumbs-bind` attribute allows you to specify `model` attributes that should be bound to a DOM element.
 
-The `data-thumbs-bind` event will automatically try to determine how to apply the attribute to the dom node based off what type of dom node it is.
-
-If the dom element is an `input` element then it will first check if it is a `radio` or `checkbox` it will aet the `checked` attribute if otherwise it will set the `value` of the element.
+The `data-thumbs-bind` event will automatically try to determine how to apply the attribute to the DOM node based off node type. For `input` elements, `thumbs` flexes based on input type. For `radio` or `checkbox`, it sets the `checked` attribute, otherwise it sets the `value` of the element.
 
 ```html
 <form>
@@ -191,7 +189,7 @@ If the dom element is an `input` element then it will first check if it is a `ra
 ```
 
 
-If the dom element is not an `input` (i.e. a `div`) then it will set the `text` of the element.
+If the DOM element is not an `input` (i.e. a `div`), then it will set the `text` of the element.
 
 ```html
 <form>
@@ -200,9 +198,9 @@ If the dom element is not an `input` (i.e. a `div`) then it will set the `text` 
 </form>
 ```
 
-`data-thumbs-bind` will also listen for changes on any bound property and automatically update the element.
+`data-thumbs-bind` listens for changes on any bound property and automatically updates the element.
 
-If you wish to specify what property/attribute to set on an element you can also use the `<attribute|function>:<modelProperty>` syntax
+If you wish to specify what property/attribute to set on an element you can also use the `<attribute|function>:<modelProperty>` syntax.
 
 ```html
 <form>
@@ -211,7 +209,7 @@ If you wish to specify what property/attribute to set on an element you can also
 </form>
 ```
 
-As with `data-thumbs-delegate` you can specify multiple attributes to be set by seperating with a space.
+As with `data-thumbs-delegate`, you can specify multiple attributes to be set by seperating with a space.
 
 ```html
 <form>
@@ -259,7 +257,7 @@ var MyView = thumbs.View.extend({
 
 The `data-thumbs-bind-class` attribute allows you to toggle classes based on a truthy value.
 
-In this example the class "visible" added/removed based on the model attribute `isChecked`
+In this example the class "visible" is added/removed based on the model attribute `isChecked`.
 
 ```html
 <p data-thumbs-bind-class="visible:isChecked"></p>
@@ -267,11 +265,11 @@ In this example the class "visible" added/removed based on the model attribute `
 
 **`data-thumbs-format`**
 
-The `data-thumbs-format` attribute allows the specification of a formatting function this is typically used in tandem with `data-thumbs-bind`.
+The `data-thumbs-format` attribute allows the specification of a formatting function. This is typically used in tandem with `data-thumbs-bind`.
 
-The `data-thumbs-format` will look a function matching the name given to `data-thumbs-format`
+`data-thumbs-format` will look for a function matching the given name.
 
-For example suppose you had a value that is a currency.
+For example, suppose you had a value that is a currency.
 
 ```html
 <div>
@@ -291,11 +289,11 @@ var MyView = thumbs.View.extend({
 
 `data-thumbs-el`
 
-The `data-thumbs-el` attribute allows you to specify what your el should be when creating your views.
+The `data-thumbs-el` attribute allows you to specify what your `el` should be when creating your views.
 
-For example suppose you have a view, if you use the default backbone then you element will be wrapped in a div.
+For example, suppose you have a view. If you use the backbone default, then your element will be wrapped in a div.
 
-**Note** If you pass in an `el` to your view and you use `data-thumbs-el` then that element will be replaced.
+**Note** If you pass in an `el` to your view and you use `data-thumbs-el`, then that element will be replaced.
 
 ```html
 <li data-thumbs-el>
@@ -304,7 +302,6 @@ For example suppose you have a view, if you use the default backbone then you el
 ```
 
 ### Subviews
-
 
 **`data-thumbs-view`**
 
@@ -318,7 +315,7 @@ var MyView = thumbs.View.extend({
 });
 ```
 
-And your DOM Element would look like the following
+And your DOM Element would look like the following:
 
 ```html
 
@@ -330,7 +327,7 @@ And your DOM Element would look like the following
 
 **`data-thumbs-args`**
 
-When creating a subview you may have options you wish to pass to the constructor of that subview to do that use `data-thumbs-args`
+When creating a subview you may have options you wish to pass to the constructor of that subview. To do that, use `data-thumbs-args`.
 
 `data-thumbs-args` takes a syntax very similar to a `javascript` object.
 
@@ -352,11 +349,11 @@ To reference properties on the parent view you may just reference them as you no
 
 ```
 
-**Note** how model is reference with out the `this` keyword.
+**Note** how model is referenced without the `this` keyword.
 
 **`data-thumbs-id`**
 
-When using `data-thumbs-id` with a subview the `$` representation of the id will be a reference to the view instead of the wrapped DOM element.
+When using `data-thumbs-id` with a subview, the `$` representation of the id will be a reference to the view instead of the wrapped DOM element.
 
 ```html
 <div>
@@ -383,7 +380,7 @@ var MyView = thumbs.View.extend({
 
 When using `data-thumbs-bind` with a subview it will look for the following functions to set the value.
 
-* `val` : If your subview contains a `val` function then the value will be passed to that function.
+* `val` : If your subview contains a `val` function, then the value will be passed to that function.
 
 ```html
 <div>
@@ -406,7 +403,7 @@ var MyView = thumbs.View.extend({
 
 ```
 
-* `text` : If your subview contains a `text` function then the value will be passed to that function.
+* `text` : If your subview contains a `text` function, then the value will be passed to that function.
 
 ```html
 <div>
@@ -428,7 +425,7 @@ var MyView = thumbs.View.extend({
 
 ```
 
-If you wish to specify a custom setter then you may specify it through the `<functionName>:<boundValue>` format
+If you wish to specify a custom setter, you may specify it through the `<functionName>:<boundValue>` format
 
 
 ```html
@@ -453,7 +450,7 @@ var MyView = thumbs.View.extend({
 
 ###`thumbs.TemplateView`
 
-Thumbs provides a view that will parse templates and add it to the `el` of the view.
+Thumbs provides a view that will parse a template and add it to the `el` of the view.
 
 ```html
 <script type="text/template" id="li-template">
@@ -471,7 +468,7 @@ var MyView = thumbs.TemplateView.extend({
 
 ```
 
-By default `thumbs.TemplateView` will use the `_.template` function. If you wish to use your own templater such as [`handlebars`](http://handlebarsjs.com/) you can set it through `thumbs.templater`
+By default `thumbs.TemplateView` will use the `_.template` function. If you wish to use your own templater, such as [`handlebars`](http://handlebarsjs.com/), you can set it through `thumbs.templater`.
 
 ```
 thumbs.templater(function(tmpl){
@@ -501,7 +498,7 @@ The current version of `thumbs`.
 
 ###`thumbs.MULTI_ARG_TOKEN`
 
-By default thumbs splits attributes that accept multiple arguments by the following `RegExp` `/ +/` you can change that functionality by setting this property.
+By default thumbs splits attributes that accept multiple arguments by the following `RegExp`: `/ +/`. You can change that functionality by setting this property.
 
 ```javascript
 //split multiple arguments by a '|' character
@@ -516,7 +513,7 @@ thumbs.MULTI_ARG_TOKEN = /\|/;
 
 ###`thumbs.KEY_VALUE_TOKEN`
 
-If you wish to change how key values in data attrbutes are split you can set this property.
+If you wish to change how key values in data attributes are split, you can set this property.
 
 ```javascript
 //split multiple arguments by a '~' character
